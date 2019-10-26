@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.bytedeco.javacpp.opencv_stitching;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
@@ -51,8 +52,8 @@ public class MainActivity extends AppCompatActivity {
         img2Path = appPath + "/" + "img_2.png";
         infoToast(this, appPath);
 
-        rgb2gray();
         combine();
+        rgb2gray();
     }
 
     public void rgb2gray() {
@@ -62,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
         img_1.setImageBitmap(originImg);
 
         // 修改灰度
-        Mat rgbMat = new Mat();
+//        Mat rgbMat = new Mat();
 //        Mat grayMat = new Mat();
 //        ImageView img_2 = findViewById(R.id.img_2);
 //        Bitmap grayImg = Bitmap.createBitmap(originImg.getWidth(), originImg.getHeight(), Bitmap.Config.RGB_565);
@@ -73,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void combine() {// 合并图片
-        ;
+        opencv_stitching.Stitcher sb = new opencv_stitching.Stitcher();
     }
 
     static public void infoLog(String log) {
