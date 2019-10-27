@@ -25,7 +25,7 @@ import org.bytedeco.opencv.opencv_java;
 import org.bytedeco.opencv.opencv_stitching.Stitcher;
 import org.opencv.android.Utils;
 //import org.opencv.core.Mat;
-import org.opencv.imgproc.Imgproc;
+//import org.opencv.imgproc.Imgproc;
 
 import static org.bytedeco.opencv.global.opencv_imgcodecs.imread;
 
@@ -96,13 +96,24 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void combine() {// 合并图片
+        // 读取两幅图片
         MatVector imgs = new MatVector();
         Mat matLeft = imread(img2Path);// 左半部分
         Mat matRight = imread(img3Path);// 右半部分
         imgs.push_back(matLeft);
         imgs.push_back(matRight);
         Stitcher stic = Stitcher.create();
-//        stic.stitch()
+
+        // 合并
+        Mat pano = new Mat();
+        stic.stitch(imgs, pano);
+
+        // 显示合并的图片
+        infoLog(pano.arrayWidth() + " " + pano.arrayHeight());
+//        ImageView imageView1 = findViewById(R.id.img_1);
+//        Bitmap img3 = Bitmap.createBitmap;
+//        Utils.bitmapToMat();
+//        imageView1.setImageBitmap();
     }
 
     static public void infoLog(String log) {
