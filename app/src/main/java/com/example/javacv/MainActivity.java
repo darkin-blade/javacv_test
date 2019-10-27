@@ -15,13 +15,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.bytedeco.javacpp.opencv_stitching;
+import org.bytedeco.javacpp.Loader;
+import org.bytedeco.javacpp.opencv_java;
+import org.bytedeco.javacpp.opencv_stitching.Stitcher;
+//import org.bytedeco.opencv.opencv_java;
+//import org.bytedeco.opencv.opencv_stitching.Stitcher;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
 
 public class MainActivity extends AppCompatActivity {
-
     static public String appPath = null;
     static public String img1Path = null;
     static public String img2Path = null;
@@ -39,6 +42,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void init() {
+        Loader.load(opencv_java.class);// 不能直接放在class开头
+
         // 检查权限
         String permission = "android.permission.WRITE_EXTERNAL_STORAGE";
         int check_result = ActivityCompat.checkSelfPermission(this, permission);// `允许`返回0,`拒绝`返回-1
@@ -63,18 +68,18 @@ public class MainActivity extends AppCompatActivity {
         img_1.setImageBitmap(originImg);
 
         // 修改灰度
-//        Mat rgbMat = new Mat();
-//        Mat grayMat = new Mat();
-//        ImageView img_2 = findViewById(R.id.img_2);
-//        Bitmap grayImg = Bitmap.createBitmap(originImg.getWidth(), originImg.getHeight(), Bitmap.Config.RGB_565);
-//        Utils.bitmapToMat(originImg, rgbMat);
-//        Imgproc.cvtColor(rgbMat, grayMat, Imgproc.COLOR_RGB2GRAY);
-//        Utils.matToBitmap(grayMat, grayImg);
-//        img_2.setImageBitmap(grayImg);
+        Mat rgbMat = new Mat();
+        Mat grayMat = new Mat();
+        ImageView img_2 = findViewById(R.id.img_2);
+        Bitmap grayImg = Bitmap.createBitmap(originImg.getWidth(), originImg.getHeight(), Bitmap.Config.RGB_565);
+        Utils.bitmapToMat(originImg, rgbMat);
+        Imgproc.cvtColor(rgbMat, grayMat, Imgproc.COLOR_RGB2GRAY);
+        Utils.matToBitmap(grayMat, grayImg);
+        img_2.setImageBitmap(grayImg);
     }
 
     public void combine() {// 合并图片
-        opencv_stitching.Stitcher sb = new opencv_stitching.Stitcher();
+        Stitcher sb = new Stitcher();
     }
 
     static public void infoLog(String log) {
