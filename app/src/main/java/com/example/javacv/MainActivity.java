@@ -16,10 +16,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.bytedeco.javacpp.Loader;
-import org.bytedeco.javacpp.opencv_java;
-import org.bytedeco.javacpp.opencv_stitching.Stitcher;
-//import org.bytedeco.opencv.opencv_java;
-//import org.bytedeco.opencv.opencv_stitching.Stitcher;
+//import org.bytedeco.javacpp.opencv_java;
+//import org.bytedeco.javacpp.opencv_stitching.Stitcher;
+import org.bytedeco.opencv.opencv_java;
+import org.bytedeco.opencv.opencv_stitching.Stitcher;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void init() {
-        Loader.load(opencv_java.class);// 不能直接放在class开头
+//        Loader.load(opencv_java.class);// 不能直接放在class开头
 
         // 检查权限
         String permission = "android.permission.WRITE_EXTERNAL_STORAGE";
