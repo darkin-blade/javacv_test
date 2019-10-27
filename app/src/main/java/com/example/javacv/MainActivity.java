@@ -28,27 +28,28 @@ import org.opencv.android.Utils;
 //import org.opencv.imgproc.Imgproc;
 
 import static org.bytedeco.opencv.global.opencv_imgcodecs.imread;
+import static org.bytedeco.opencv.global.opencv_imgcodecs.imwrite;
 
 public class MainActivity extends AppCompatActivity {
     static public String appPath = null;
     static public String img1Path = null;
     static public String img2Path = null;
     static public String img3Path = null;
+    static public String img4Path = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-    }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
         init();
+
+        combine();
+        // rgb2gray();// TODO
     }
 
     public void init() {
-        Loader.load(opencv_java.class);// 不能直接放在class开头
+        Loader.load(opencv_java.class);// 初始化,不能直接放在class开头
 
         // 检查权限
         String permission = "android.permission.WRITE_EXTERNAL_STORAGE";
@@ -62,10 +63,8 @@ public class MainActivity extends AppCompatActivity {
         img1Path = appPath + "/" + "img_1.png";
         img2Path = appPath + "/" + "img_2.png";
         img3Path = appPath + "/" + "img_3.png";
+        img3Path = appPath + "/" + "img_4.png";
         infoToast(this, appPath);
-
-        combine();
-        // rgb2gray();// TODO
     }
 
     public void showPic() {
@@ -99,21 +98,25 @@ public class MainActivity extends AppCompatActivity {
         // 读取两幅图片
         MatVector imgs = new MatVector();
         Mat matLeft = imread(img2Path);// 左半部分
-        Mat matRight = imread(img3Path);// 右半部分
+        Mat matRight = imread(img1Path);// 右半部分
+        infoLog("" + (matLeft == null || matRight == null));
         imgs.push_back(matLeft);
         imgs.push_back(matRight);
         Stitcher stic = Stitcher.create();
 
         // 合并
         Mat pano = new Mat();
-        stic.stitch(imgs, pano);
-
-        // 显示合并的图片
+        infoLog("" + stic.stitch(imgs, pano));
+        infoLog(matLeft.arrayWidth() + " " + matLeft.arrayHeight());
+        infoLog(matRight.arrayWidth() + " " + matRight.arrayHeight());
         infoLog(pano.arrayWidth() + " " + pano.arrayHeight());
-//        ImageView imageView1 = findViewById(R.id.img_1);
-//        Bitmap img3 = Bitmap.createBitmap;
-//        Utils.bitmapToMat();
-//        imageView1.setImageBitmap();
+        imwrite(img4Path, matLeft);
+
+        // 显示合并的图片 TODO
+//        ImageView imageView1 = findViewById(R.id.img_1);// 合并之后的图片显示的位置
+//        Bitmap img3 = Bitmap.createBitmap(pano.arrayWidth(), pano.arrayHeight(), Bitmap.Config.RGB_565);
+//        Utils.matToBitmap(pano, img3);
+//        imageView1.setImageBitmap(img3);
     }
 
     static public void infoLog(String log) {
