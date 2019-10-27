@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void init() {
-//        Loader.load(opencv_java.class);// 不能直接放在class开头
+        Loader.load(opencv_java.class);// 不能直接放在class开头
 
         // 检查权限
         String permission = "android.permission.WRITE_EXTERNAL_STORAGE";
