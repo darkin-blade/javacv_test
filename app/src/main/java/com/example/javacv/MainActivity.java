@@ -8,7 +8,6 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.media.ImageReader;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -19,12 +18,15 @@ import android.widget.Toast;
 import org.bytedeco.javacpp.Loader;
 //import org.bytedeco.javacpp.opencv_java;
 //import org.bytedeco.javacpp.opencv_stitching.Stitcher;
-import org.bytedeco.opencv.opencv_core.Mat;
-import org.bytedeco.opencv.opencv_core.MatVector;
+import org.bytedeco.javacv.OpenCVFrameConverter;
+import org.bytedeco.opencv.opencv_core.*;
 import org.bytedeco.opencv.opencv_java;
 import org.bytedeco.opencv.opencv_stitching.Stitcher;
 import org.opencv.android.Utils;
-//import org.opencv.core.Mat;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfByte;
+import org.opencv.features2d.BFMatcher;
+import org.opencv.imgcodecs.Imgcodecs;
 //import org.opencv.imgproc.Imgproc;
 
 import static org.bytedeco.opencv.global.opencv_imgcodecs.imread;
@@ -44,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
 
         init();
 
+        showPic();
         combine();
         // rgb2gray();// TODO
     }
@@ -60,21 +63,33 @@ public class MainActivity extends AppCompatActivity {
 
         // 初始化路径字符串
         appPath = getExternalFilesDir("").getAbsolutePath();
-        img1Path = appPath + "/" + "img_1.png";
-        img2Path = appPath + "/" + "img_2.png";
-        img3Path = appPath + "/" + "img_3.png";
-        img3Path = appPath + "/" + "img_4.png";
+//        img1Path = appPath + "/" + "img_1.png";
+//        img2Path = appPath + "/" + "img_2.png";
+//        img3Path = appPath + "/" + "img_3.png";
+//        img4Path = appPath + "/" + "img_4.png";// TODO
+        img1Path = appPath + "/img_6.jpg";
+        img2Path = appPath + "/img_7.jpg";
+        img3Path = appPath + "/img_8.jpg";
+        img4Path = appPath + "/img_9.jpg";
         infoToast(this, appPath);
     }
 
     public void showPic() {
-        ImageView imageView2 = findViewById(R.id.img_2);
-        Bitmap originImg = BitmapFactory.decodeFile(img2Path);// 打开本机图片
-        imageView2.setImageBitmap(originImg);
+        ImageView imageView = findViewById(R.id.img_1);
+        Bitmap img = BitmapFactory.decodeFile(img1Path);// 打开本机图片
+        imageView.setImageBitmap(img);
 
-        ImageView imageView3 = findViewById(R.id.img_3);
-        Bitmap img3 = BitmapFactory.decodeFile(img3Path);// 打开本机图片
-        imageView3.setImageBitmap(img3);
+        imageView = findViewById(R.id.img_2);
+        img = BitmapFactory.decodeFile(img2Path);
+        imageView.setImageBitmap(img);
+
+        imageView = findViewById(R.id.img_3);
+        img = BitmapFactory.decodeFile(img3Path);
+        imageView.setImageBitmap(img);
+
+        imageView = findViewById(R.id.img_4);
+        img = BitmapFactory.decodeFile(img4Path);
+        imageView.setImageBitmap(img);
     }
 
     public void rgb2gray() {
@@ -95,28 +110,35 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void combine() {// 合并图片
-        // 读取两幅图片
+        // 读取两幅图片 TODO
         MatVector imgs = new MatVector();
-        Mat matLeft = imread(img2Path);// 左半部分
-        Mat matRight = imread(img1Path);// 右半部分
-        infoLog("" + (matLeft == null || matRight == null));
-        imgs.push_back(matLeft);
-        imgs.push_back(matRight);
-        Stitcher stic = Stitcher.create();
+        org.bytedeco.opencv.opencv_core.Mat mat1 = imread(img1Path);
+        org.bytedeco.opencv.opencv_core.Mat mat2 = imread(img2Path);
+        org.bytedeco.opencv.opencv_core.Mat mat3 = imread(img3Path);
+        org.bytedeco.opencv.opencv_core.Mat mat4 = imread(img4Path);
+        imgs.push_back(mat1);
+        imgs.push_back(mat2);
+        imgs.push_back(mat3);
+        imgs.push_back(mat4);
 
         // 合并
-        Mat pano = new Mat();
-        infoLog("" + stic.stitch(imgs, pano));
-        infoLog(matLeft.arrayWidth() + " " + matLeft.arrayHeight());
-        infoLog(matRight.arrayWidth() + " " + matRight.arrayHeight());
+        Stitcher stitcher = Stitcher.create();
+        org.bytedeco.opencv.opencv_core.Mat pano = new org.bytedeco.opencv.opencv_core.Mat();
+        infoLog(mat1.arrayWidth() + " " + mat1.arrayHeight());
+        infoLog(mat2.arrayWidth() + " " + mat2.arrayHeight());
+        infoLog(mat3.arrayWidth() + " " + mat3.arrayHeight());
+        infoLog(mat4.arrayWidth() + " " + mat4.arrayHeight());
+        int result = stitcher.stitch(imgs, pano);// 合并
         infoLog(pano.arrayWidth() + " " + pano.arrayHeight());
-        imwrite(img4Path, matLeft);
 
         // 显示合并的图片 TODO
-//        ImageView imageView1 = findViewById(R.id.img_1);// 合并之后的图片显示的位置
-//        Bitmap img3 = Bitmap.createBitmap(pano.arrayWidth(), pano.arrayHeight(), Bitmap.Config.RGB_565);
-//        Utils.matToBitmap(pano, img3);
-//        imageView1.setImageBitmap(img3);
+        if (result == 0) {// 如果成功
+            Mat mat = new Mat(pano.address());
+            ImageView imageView1 = findViewById(R.id.img_5);// 合并之后的图片显示的位置
+            Bitmap img3 = Bitmap.createBitmap(pano.arrayWidth(), pano.arrayHeight(), Bitmap.Config.RGB_565);
+            Utils.matToBitmap(mat, img3);
+            imageView1.setImageBitmap(img3);
+        }
     }
 
     static public void infoLog(String log) {

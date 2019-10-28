@@ -41,7 +41,17 @@
 
                 <ImageView
                     android:id="@+id/img_3"
-                    android:background="@color/black"
+                    style="@style/img_show">
+                </ImageView>
+
+                <ImageView
+                    android:id="@+id/img_4"
+                    style="@style/img_show">
+                </ImageView>
+
+
+                <ImageView
+                    android:id="@+id/img_5"
                     style="@style/img_show">
                 </ImageView>
 
