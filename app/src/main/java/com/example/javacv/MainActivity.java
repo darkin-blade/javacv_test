@@ -27,7 +27,10 @@ import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
 import org.opencv.features2d.BFMatcher;
 import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.imgproc.Imgproc;
 //import org.opencv.imgproc.Imgproc;
+
+import java.nio.ByteBuffer;
 
 import static org.bytedeco.opencv.global.opencv_imgcodecs.imread;
 import static org.bytedeco.opencv.global.opencv_imgcodecs.imwrite;
@@ -135,20 +138,13 @@ public class MainActivity extends AppCompatActivity {
 
         // 显示合并的图片 TODO
         if (result == 0) {// 如果成功
-            byte [] imgData = new byte[pano.arrayWidth() * pano.arrayHeight()];
-            pano.data().put(imgData);
-            System.out.print("fuck");
-            for (int i = 0; i < pano.arrayHeight(); i ++) {
-                for (int j = 0; j < pano.arrayWidth(); j ++) {
-                    ;
-                }
-            }
-
-//            Mat mat = new Mat(pano.address());
+            Mat matBGR = new Mat(pano.address());// TODO 颜色异常
+            Mat matRGB = new Mat();
+            Imgproc.cvtColor(matBGR, matRGB, Imgproc.COLOR_BGR2RGB);
             ImageView imageView1 = findViewById(R.id.img_5);// 合并之后的图片显示的位置
-//            Bitmap img3 = Bitmap.createBitmap(pano.arrayWidth(), pano.arrayHeight(), Bitmap.Config.RGB_565);
-            Bitmap img3 = BitmapFactory.decodeByteArray(imgData, 0, imgData.length);
-//            Utils.matToBitmap(mat, img3);
+            Bitmap img3 = Bitmap.createBitmap(pano.arrayWidth(), pano.arrayHeight(), Bitmap.Config.RGB_565);
+//            Bitmap img3 = BitmapFactory.decodeByteArray(imgData, 0, imgData.length);
+            Utils.matToBitmap(matRGB, img3);
             imageView1.setImageBitmap(img3);
         }
     }
