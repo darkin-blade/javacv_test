@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
     static public String img2Path = null;
     static public String img3Path = null;
     static public String img4Path = null;
+    static public String img5Path = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
         img2Path = appPath + "/img_7.jpg";
         img3Path = appPath + "/img_8.jpg";
         img4Path = appPath + "/img_9.jpg";
+        img5Path = appPath + "/img_10.jpg";// TODO
         infoToast(this, appPath);
     }
 
@@ -133,10 +135,20 @@ public class MainActivity extends AppCompatActivity {
 
         // 显示合并的图片 TODO
         if (result == 0) {// 如果成功
-            Mat mat = new Mat(pano.address());
+            byte [] imgData = new byte[pano.arrayWidth() * pano.arrayHeight()];
+            pano.data().put(imgData);
+            System.out.print("fuck");
+            for (int i = 0; i < pano.arrayHeight(); i ++) {
+                for (int j = 0; j < pano.arrayWidth(); j ++) {
+                    ;
+                }
+            }
+
+//            Mat mat = new Mat(pano.address());
             ImageView imageView1 = findViewById(R.id.img_5);// 合并之后的图片显示的位置
-            Bitmap img3 = Bitmap.createBitmap(pano.arrayWidth(), pano.arrayHeight(), Bitmap.Config.RGB_565);
-            Utils.matToBitmap(mat, img3);
+//            Bitmap img3 = Bitmap.createBitmap(pano.arrayWidth(), pano.arrayHeight(), Bitmap.Config.RGB_565);
+            Bitmap img3 = BitmapFactory.decodeByteArray(imgData, 0, imgData.length);
+//            Utils.matToBitmap(mat, img3);
             imageView1.setImageBitmap(img3);
         }
     }
