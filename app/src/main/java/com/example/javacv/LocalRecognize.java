@@ -16,7 +16,7 @@ import org.opencv.android.Utils;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
 
-public class LocalReco extends DialogFragment {
+public class LocalRecognize extends DialogFragment {
     String appPath = MainActivity.appPath;// TODO
 
     @Override

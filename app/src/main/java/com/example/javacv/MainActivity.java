@@ -6,44 +6,44 @@ import androidx.core.app.ActivityCompat;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import org.bytedeco.javacpp.Loader;
-//import org.bytedeco.javacpp.opencv_java;
-//import org.bytedeco.javacpp.opencv_stitching.Stitcher;
-import org.bytedeco.opencv.opencv_core.*;
 import org.bytedeco.opencv.opencv_java;
-import org.bytedeco.opencv.opencv_stitching.Stitcher;
-import org.opencv.android.Utils;
-import org.opencv.core.Mat;
-import org.opencv.imgproc.Imgproc;
-//import org.opencv.imgproc.Imgproc;
-
-import static org.bytedeco.opencv.global.opencv_imgcodecs.imread;
-import static org.bytedeco.opencv.global.opencv_imgcodecs.imwrite;
 
 public class MainActivity extends AppCompatActivity implements DialogInterface.OnDismissListener {
     static public int window_num;
-    static public String appPath = null;
+    static public String appPath = null;// app路径
+    public int isExit;
+
+    static public final int MAIN = 0;
+    static public final int LOCAL_RECOGNIZE = 1;// 本地选取图片
+    static public final int TAKE_PICTURES = 2;// 拍照获取图片
+
+    static LocalRecognize localRecognize;// 本地选取
+    static TakePicutures takePicutures;// 拍照获取
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        init();
+        initApp();
+        initBtn();
     }
 
-    public void init() {
-        Loader.load(opencv_java.class);// 初始化,不能直接放在class开头
+    public void initApp() {
+        Loader.load(opencv_java.class);// openCV初始化,不能直接放在class开头
+
+        // 初始化变量
+        window_num = MAIN;
+        isExit = 0;
 
         // 检查权限
         String permission = "android.permission.WRITE_EXTERNAL_STORAGE";
@@ -55,6 +55,20 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
         // 初始化路径字符串
         appPath = getExternalFilesDir("").getAbsolutePath();
         infoToast(this, appPath);
+
+        // 初始化窗口
+        localRecognize = new LocalRecognize();
+        takePicutures = new TakePicutures();
+    }
+
+    public void initBtn() {// 初始化按钮
+        Button btnLocal = findViewById(R.id.local_recognize);
+        btnLocal.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                localRecognize.show(getSupportFragmentManager(), "local recognize");
+            }
+        });
     }
 
     static public void infoLog(String log) {
@@ -70,7 +84,18 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
     }
 
     @Override
+    public void onBackPressed() {
+        if (isExit == 1) {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
     public void onDismiss(DialogInterface dialogInterface) {
         infoLog("window num: " + window_num);
+        switch (window_num) {// TODO
+            case LOCAL_RECOGNIZE:
+                break;
+        }
     }
 }

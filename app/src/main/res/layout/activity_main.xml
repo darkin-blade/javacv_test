@@ -8,7 +8,7 @@
 
     <TextView
         style="@style/bar_2"
-        android:text="Gesture">
+        android:text="JavaCV">
     </TextView>
 
 
@@ -19,17 +19,16 @@
         android:orientation="vertical">
 
         <Button
-            android:id="@+id/add_gesture"
+            android:id="@+id/local_recognize"
             style="@style/item_1"
             android:text="Local Recognize">
         </Button>
         <Button
-            android:id="@+id/test_gesture"
+            android:id="@+id/take_pictures"
             style="@style/item_2"
             android:text="Take Pictures">
         </Button>
         <Button
-            android:id="@+id/view_library"
             style="@style/item_3"
             android:text="TODO">
         </Button>
