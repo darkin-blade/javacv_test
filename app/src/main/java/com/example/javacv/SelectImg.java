@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.example.javacv.interfaces.NormalManager;
 
@@ -31,7 +32,42 @@ public class SelectImg extends NormalManager {
         // TODO
     }
 
-    public LinearLayout itemOnClick(int itemType, final String itemName, final String itemPath, LinearLayout item) {// 绑定点击事件
+    public LinearLayout createItem(int itemType, final String itemName, final String itemPath) {
+        LinearLayout layout = myView.findViewById(R.id.item_list);
+        LinearLayout.LayoutParams itemParam = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, item_height);
+        LinearLayout.LayoutParams typeParam = new LinearLayout.LayoutParams(item_height, item_height);
+        LinearLayout.LayoutParams iconParam = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        LinearLayout.LayoutParams nameParam = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+
+        LinearLayout item = new LinearLayout(getContext());// TODO 参数
+        item.setLayoutParams(itemParam);
+        item.setBackgroundResource(R.color.grey);
+        item.setPadding(item_padding, 0, 0, 0);
+
+        LinearLayout type = new LinearLayout(getContext());// 图标的外圈
+        type.setLayoutParams(typeParam);
+        type.setPadding(type_padding, type_padding, type_padding, type_padding);
+
+        View icon = new View(getContext());// 图标
+        icon.setLayoutParams(iconParam);
+        if (itemType == 0) {// 文件
+            icon.setBackgroundResource(R.drawable.item_file);
+        } else {// 文件夹
+            icon.setBackgroundResource(R.drawable.item_dir);
+        }
+
+        TextView name = new TextView(getContext());// 文件名
+        nameParam.setMargins(name_margin, name_margin, name_margin, name_margin);
+        name.setLayoutParams(nameParam);
+        name.setBackgroundResource(R.color.grey);
+        name.setText(itemName);
+        name.setPadding(name_padding, name_padding, name_padding, name_padding);
+        name.setSingleLine();
+
+        type.addView(icon);
+        item.addView(type);
+        item.addView(name);
+
         if (itemType == 2) {// 父文件夹
             item.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -56,6 +92,9 @@ public class SelectImg extends NormalManager {
             });
         }
 
+        layout.addView(item);
+
         return item;
     }
+
 }

@@ -24,8 +24,10 @@ public class NormalManager extends DialogFragment {
     public Button cancel;
 
     public int item_height = 130;
+    public int item_padding = 40;
     public int type_padding = 20;
-    public int name_padding = 40;
+    public int name_padding = 30;
+    public int name_margin = 10;
 
     public String nameLibrary;// 打开的库的路径
     public String nameGesture;// 手势名称
@@ -108,7 +110,7 @@ public class NormalManager extends DialogFragment {
         LinearLayout item = new LinearLayout(getContext());// TODO 参数
         item.setLayoutParams(itemParam);
         item.setBackgroundResource(R.color.grey);
-        item.setPadding(name_padding, 0, 0, 0);
+        item.setPadding(item_padding, 0, 0, 0);
 
         LinearLayout type = new LinearLayout(getContext());// 图标的外圈
         type.setLayoutParams(typeParam);
@@ -123,6 +125,7 @@ public class NormalManager extends DialogFragment {
         }
 
         TextView name = new TextView(getContext());// 文件名
+        nameParam.setMargins(name_margin, name_margin, name_margin, name_margin);
         name.setLayoutParams(nameParam);
         name.setBackgroundResource(R.color.grey);
         name.setText(itemName);
