@@ -82,7 +82,9 @@ public class SelectImg extends NormalManager {
 
         type.addView(icon);
         item.addView(type);
-        item.addView(name);
+        detail.addView(name);
+        detail.addView(checkBox);
+        item.addView(detail);
 
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) checkBox.getLayoutParams();
         params.addRule(RelativeLayout.ALIGN_RIGHT);// 单选框靠右
