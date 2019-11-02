@@ -24,7 +24,6 @@ public class LocalRecognize extends DialogFragment {
     static public FragmentManager fragmentManager;
 
     // TODO: ArrayList 存储路径
-    // TODO: 记住上一次文件浏览器的路径
 
     @Override
     public void show(FragmentManager fragmentManager, String tag) {
@@ -56,6 +55,20 @@ public class LocalRecognize extends DialogFragment {
         btnDel = myView.findViewById(R.id.button_2);
         btnWork = myView.findViewById(R.id.button_3);
         btnBack = myView.findViewById(R.id.button_4);
+
+        btnAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectImg.show(fragmentManager, "select");
+            }
+        });
+
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dismiss();
+            }
+        });
     }
 
     public void selectImg() {// 添加图片 TODO

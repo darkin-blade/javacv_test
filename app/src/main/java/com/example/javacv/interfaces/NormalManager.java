@@ -60,11 +60,11 @@ public class NormalManager extends DialogFragment {
         return null;
     }
 
-    public void initPath(View view) {
-        curPath = view.findViewById(R.id.cur_path);// 路径框
+    public void initPath() {
+        curPath = myView.findViewById(R.id.cur_path);// 路径框
     }
 
-    public void initButton(View view) {
+    public void initButton() {
         ;
     }
 

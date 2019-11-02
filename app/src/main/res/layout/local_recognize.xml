@@ -56,7 +56,7 @@
                     android:layout_marginRight="2dp"/>
                 <Button
                     android:id="@+id/button_2"
-                    android:text="Work"
+                    android:text="Del"
                     style="@style/cancel_button"
                     android:layout_marginLeft="2dp"
                     android:layout_marginRight="2dp"/>
