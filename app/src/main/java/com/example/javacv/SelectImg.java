@@ -71,7 +71,7 @@ public class SelectImg extends NormalManager {
         RelativeLayout detail = new RelativeLayout(getContext());
         detail.setLayoutParams(detailParam);
 
-        CheckBox checkBox = new CheckBox(getContext());
+        final CheckBox checkBox = new CheckBox(getContext());
         boxParam.setMargins(box_right, box_top, box_right, box_top);
         checkBox.setLayoutParams(boxParam);
         checkBox.setButtonDrawable(R.drawable.checkbox_library);
@@ -91,11 +91,8 @@ public class SelectImg extends NormalManager {
         item.addView(detail);
 
         // 设置靠父元素左/右
-        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) name.getLayoutParams();
-        params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-        name.setLayoutParams(params);
-        params = (RelativeLayout.LayoutParams) checkBox.getLayoutParams();
-        params.addRule(RelativeLayout.ALIGN_RIGHT);// 单选框靠右
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) checkBox.getLayoutParams();
+        params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);// 单选框靠右
         checkBox.setLayoutParams(params);
 
         if (itemType == 2) {// 父文件夹
@@ -117,7 +114,13 @@ public class SelectImg extends NormalManager {
             item.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    // TODO
+                    if (checkBox.isChecked()) {
+                        item.setBackgroundResource(R.color.grey);
+                        checkBox.callOnClick();
+                    } else {
+                        item.setBackgroundResource(R.color.grey_light);
+                        checkBox.callOnClick();
+                    }
                 }
             });
         }
