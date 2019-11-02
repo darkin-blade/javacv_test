@@ -1,46 +1,61 @@
 package com.example.javacv;
 
-import android.graphics.Bitmap;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.Button;
 
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 
-import org.bytedeco.opencv.opencv_core.MatVector;
-import org.bytedeco.opencv.opencv_stitching.Stitcher;
-import org.opencv.android.Utils;
-import org.opencv.core.Mat;
-import org.opencv.imgproc.Imgproc;
-
 public class LocalRecognize extends DialogFragment {
     String appPath = MainActivity.appPath;// TODO
 
+    public SelectImg selectImg;// 选取图片
+
+    public Button btnAdd;// 添加本地图片
+    public Button btnDel;// 删除添加的图片
+    public Button btnWork;// 生成->保存合并的图片
+    public Button btnBack;// 返回主菜单
+
+    static public View myView;
+    static public FragmentManager fragmentManager;
+
+    // TODO: ArrayList 存储路径
+    // TODO: 记住上一次文件浏览器的路径
+
     @Override
     public void show(FragmentManager fragmentManager, String tag) {
-        ;// TODO
+        super.show(fragmentManager, tag);
+        MainActivity.window_num = MainActivity.LOCAL_RECOGNIZE;
+
+        this.fragmentManager = fragmentManager;
+        selectImg = new SelectImg();// 初始化文件浏览器
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // TODO
+        setStyle(STYLE_NO_FRAME, android.R.style.Theme);// 关闭背景(点击外部不能取消)
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        ;// TODO
-        // TODO;
-        init();
+        myView = inflater.inflate(R.layout.local_recognize, container);
+        getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(0x00000000));// 背景透明
+
+        initBtn();
 
         return null;// TODO
     }
 
-    public void init() {
-        ;// TODO
+    public void initBtn() {
+        btnAdd = myView.findViewById(R.id.button_1);
+        btnDel = myView.findViewById(R.id.button_2);
+        btnWork = myView.findViewById(R.id.button_3);
+        btnBack = myView.findViewById(R.id.button_4);
     }
 
     public void selectImg() {// 添加图片 TODO

@@ -90,8 +90,12 @@
 
     <!-- 底栏 -->
     <dimen name="bottom_1">60dp</dimen>
+    <!-- 按钮  -->
     <dimen name="bottom_2">120dp</dimen>
+    <!--  按钮 + 输入框  -->
     <dimen name="bottom_3">180dp</dimen>
+    <!--  按钮 + 2输入框  -->
     <dimen name="bottom_4">95dp</dimen>
+    <!--  按钮 + 路径框  -->
 
 </resources>

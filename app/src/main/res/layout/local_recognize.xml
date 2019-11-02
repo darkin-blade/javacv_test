@@ -9,7 +9,7 @@
 
     <TextView
         style="@style/bar_2"
-        android:text="JavaCV">
+        android:text="Local recognize">
     </TextView>
 
 
@@ -20,7 +20,7 @@
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="@dimen/bottom_4"
+            android:layout_marginBottom="@dimen/bottom_1"
             app:layout_constraintTop_toTopOf="parent">
 
             <LinearLayout
@@ -29,51 +29,15 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
-                <ImageView
-                    android:id="@+id/img_1"
-                    style="@style/img_show">
-                </ImageView>
-
-                <ImageView
-                    android:id="@+id/img_2"
-                    style="@style/img_show">
-                </ImageView>
-
-                <ImageView
-                    android:id="@+id/img_3"
-                    style="@style/img_show">
-                </ImageView>
-
-                <ImageView
-                    android:id="@+id/img_4"
-                    style="@style/img_show">
-                </ImageView>
-
-
-                <ImageView
-                    android:id="@+id/img_5"
-                    style="@style/img_show">
-                </ImageView>
-
             </LinearLayout>
 
         </ScrollView>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/bottom_4"
+            android:layout_height="@dimen/bottom_1"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent">
-
-            <View
-                style="@style/line">
-            </View>
-
-            <TextView
-                android:id="@+id/library_name"
-                android:text="TODO"
-                style="@style/tab_white">
-            </TextView>
 
             <View
                 style="@style/line">
@@ -87,26 +51,27 @@
 
                 <Button
                     android:id="@+id/button_1"
-                    android:text="TODO"
-                    style="@style/delete_button"
+                    android:text="Add"
+                    style="@style/open_button"
                     android:layout_marginRight="2dp"/>
                 <Button
                     android:id="@+id/button_2"
-                    android:text="TODO"
+                    android:text="Work"
                     style="@style/cancel_button"
                     android:layout_marginLeft="2dp"
                     android:layout_marginRight="2dp"/>
                 <Button
                     android:id="@+id/button_3"
-                    android:text="TODO"
+                    android:text="Work"
                     style="@style/save_button"
                     android:layout_marginLeft="2dp"
                     android:layout_marginRight="2dp"/>
                 <Button
                     android:id="@+id/button_4"
-                    android:text="TODO"
-                    style="@style/open_button"
+                    android:text="Back"
+                    style="@style/delete_button"
                     android:layout_marginLeft="2dp"/>
+
             </LinearLayout>
 
         </LinearLayout>

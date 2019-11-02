@@ -69,6 +69,15 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
                 localRecognize.show(getSupportFragmentManager(), "local recognize");
             }
         });
+
+        Button btnExit = findViewById(R.id.exit);
+        btnExit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                isExit = 1;
+                onBackPressed();
+            }
+        });
     }
 
     static public void infoLog(String log) {
