@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -22,7 +23,7 @@ public class SelectImg extends NormalManager {
     public int box_width = 60;
     public int icon_height = 90;
     public int box_top = 35;
-    public int box_right = 20;
+    public int box_right = 10;
     public int name_top = 10;
     public int name_right = 80;
 
@@ -116,14 +117,25 @@ public class SelectImg extends NormalManager {
                 public void onClick(View v) {
                     if (checkBox.isChecked()) {
                         item.setBackgroundResource(R.color.grey);
-                        checkBox.callOnClick();
+                        checkBox.setChecked(false);
                     } else {
                         item.setBackgroundResource(R.color.grey_light);
-                        checkBox.callOnClick();
+                        checkBox.setChecked(true);
                     }
                 }
             });
         }
+
+        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (checkBox.isChecked()) {
+                    item.setBackgroundResource(R.color.grey_light);
+                } else {
+                    item.setBackgroundResource(R.color.grey);
+                }
+            }
+        });
 
         layout.addView(item);
 
