@@ -62,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
     }
 
     public void initBtn() {// 初始化按钮
+        // 本地识别
         Button btnLocal = findViewById(R.id.local_recognize);
         btnLocal.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -70,6 +71,7 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
             }
         });
 
+        // 一键退出
         Button btnExit = findViewById(R.id.exit);
         btnExit.setOnClickListener(new View.OnClickListener() {
             @Override

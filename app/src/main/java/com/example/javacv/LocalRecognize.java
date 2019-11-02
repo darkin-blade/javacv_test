@@ -48,7 +48,7 @@ public class LocalRecognize extends DialogFragment {
 
         initBtn();
 
-        return null;// TODO
+        return myView;
     }
 
     public void initBtn() {
