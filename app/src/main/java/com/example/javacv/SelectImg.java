@@ -20,8 +20,11 @@ import java.io.File;
 
 public class SelectImg extends NormalManager {
     public int box_width = 60;
+    public int icon_height = 90;
     public int box_top = 35;
     public int box_right = 20;
+    public int name_top = 10;
+    public int name_right = 80;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -43,7 +46,7 @@ public class SelectImg extends NormalManager {
     public LinearLayout createItem(int itemType, final String itemName, final String itemPath) {
         LinearLayout layout = myView.findViewById(R.id.item_list);
         LinearLayout.LayoutParams itemParam = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, item_height);
-        LinearLayout.LayoutParams typeParam = new LinearLayout.LayoutParams(item_height, item_height);
+        LinearLayout.LayoutParams typeParam = new LinearLayout.LayoutParams(icon_height, icon_height);
         LinearLayout.LayoutParams iconParam = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         LinearLayout.LayoutParams detailParam = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         LinearLayout.LayoutParams boxParam = new LinearLayout.LayoutParams(box_width, box_width);
@@ -68,12 +71,13 @@ public class SelectImg extends NormalManager {
         RelativeLayout detail = new RelativeLayout(getContext());
         detail.setLayoutParams(detailParam);
 
-        final CheckBox checkBox = new CheckBox(getContext());
+        CheckBox checkBox = new CheckBox(getContext());
+        boxParam.setMargins(box_right, box_top, box_right, box_top);
         checkBox.setLayoutParams(boxParam);
         checkBox.setButtonDrawable(R.drawable.checkbox_library);
 
         TextView name = new TextView(getContext());// 文件名
-        nameParam.setMargins(name_margin, name_margin, name_margin, name_margin);
+        nameParam.setMargins(0, name_top, name_right, name_top);
         name.setLayoutParams(nameParam);
         name.setBackgroundResource(R.color.grey);// TODO
         name.setText(itemName);
@@ -86,7 +90,11 @@ public class SelectImg extends NormalManager {
         detail.addView(checkBox);
         item.addView(detail);
 
-        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) checkBox.getLayoutParams();
+        // 设置靠父元素左/右
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) name.getLayoutParams();
+        params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+        name.setLayoutParams(params);
+        params = (RelativeLayout.LayoutParams) checkBox.getLayoutParams();
         params.addRule(RelativeLayout.ALIGN_RIGHT);// 单选框靠右
         checkBox.setLayoutParams(params);
 
@@ -109,13 +117,7 @@ public class SelectImg extends NormalManager {
             item.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (checkBox.isChecked()) {
-                        item.setBackgroundResource(R.color.grey);
-                        checkBox.callOnClick();
-                    } else {
-                        item.setBackgroundResource(R.color.grey_light);
-                        checkBox.callOnClick();
-                    }
+                    // TODO
                 }
             });
         }
