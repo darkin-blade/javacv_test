@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -18,24 +19,20 @@ import android.widget.Toast;
 import org.bytedeco.javacpp.Loader;
 //import org.bytedeco.javacpp.opencv_java;
 //import org.bytedeco.javacpp.opencv_stitching.Stitcher;
-import org.bytedeco.javacv.OpenCVFrameConverter;
 import org.bytedeco.opencv.opencv_core.*;
 import org.bytedeco.opencv.opencv_java;
 import org.bytedeco.opencv.opencv_stitching.Stitcher;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
-import org.opencv.core.MatOfByte;
-import org.opencv.features2d.BFMatcher;
-import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 //import org.opencv.imgproc.Imgproc;
-
-import java.nio.ByteBuffer;
 
 import static org.bytedeco.opencv.global.opencv_imgcodecs.imread;
 import static org.bytedeco.opencv.global.opencv_imgcodecs.imwrite;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements DialogInterface.OnDismissListener {
+    static public int window_num;
+
     static public String appPath = null;
     static public String img1Path = null;
     static public String img2Path = null;
@@ -49,10 +46,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         init();
-
-        showPic();
-        combine();
-        // rgb2gray();// TODO
     }
 
     public void init() {
@@ -71,15 +64,15 @@ public class MainActivity extends AppCompatActivity {
 //        img2Path = appPath + "/" + "img_2.png";
 //        img3Path = appPath + "/" + "img_3.png";
 //        img4Path = appPath + "/" + "img_4.png";// TODO
-        img1Path = appPath + "/img_6.jpg";
-        img2Path = appPath + "/img_7.jpg";
-        img3Path = appPath + "/img_8.jpg";
-        img4Path = appPath + "/img_9.jpg";
+        img1Path = appPath + "/img_11.png";
+        img2Path = appPath + "/img_12.png";
+        img3Path = appPath + "/img_13.png";
+        img4Path = appPath + "/img_14.png";
         img5Path = appPath + "/img_10.jpg";// TODO
         infoToast(this, appPath);
     }
 
-    public void showPic() {
+    public void showImg() {
         ImageView imageView = findViewById(R.id.img_1);
         Bitmap img = BitmapFactory.decodeFile(img1Path);// 打开本机图片
         imageView.setImageBitmap(img);
@@ -114,8 +107,36 @@ public class MainActivity extends AppCompatActivity {
 //        img_2.setImageBitmap(grayImg);
     }
 
-    public void combine() {// 合并图片
-        // 读取两幅图片 TODO
+    public void combine2() {// TODO 上下拼接
+        // 读取图片
+        MatVector imgs = new MatVector();
+        org.bytedeco.opencv.opencv_core.Mat mat1 = imread(img1Path);
+        org.bytedeco.opencv.opencv_core.Mat mat2 = imread(img2Path);
+        imgs.push_back(mat1);
+        imgs.push_back(mat2);
+
+        // 合并
+        Stitcher stitcher = Stitcher.create();
+        org.bytedeco.opencv.opencv_core.Mat pano = new org.bytedeco.opencv.opencv_core.Mat();
+        infoLog(mat1.arrayWidth() + " " + mat1.arrayHeight());
+        infoLog(mat2.arrayWidth() + " " + mat2.arrayHeight());
+        int result = stitcher.stitch(imgs, pano);// 合并
+        infoLog(pano.arrayWidth() + " " + pano.arrayHeight());
+
+        // 显示合并的图片 TODO
+        if (result == 0) {// 如果成功
+            Mat matBGR = new Mat(pano.address());// TODO 颜色异常
+            Mat matRGB = new Mat();
+            Imgproc.cvtColor(matBGR, matRGB, Imgproc.COLOR_BGR2RGB);// 将opencv默认的BGR转成RGB
+            ImageView imageView1 = findViewById(R.id.img_3);// 合并之后的图片显示的位置
+            Bitmap bitmap = Bitmap.createBitmap(pano.arrayWidth(), pano.arrayHeight(), Bitmap.Config.RGB_565);
+            Utils.matToBitmap(matRGB, bitmap);
+            imageView1.setImageBitmap(bitmap);
+        }
+    }
+
+    public void combine1() {// 合并图片
+        // 读取图片
         MatVector imgs = new MatVector();
         org.bytedeco.opencv.opencv_core.Mat mat1 = imread(img1Path);
         org.bytedeco.opencv.opencv_core.Mat mat2 = imread(img2Path);
@@ -140,12 +161,11 @@ public class MainActivity extends AppCompatActivity {
         if (result == 0) {// 如果成功
             Mat matBGR = new Mat(pano.address());// TODO 颜色异常
             Mat matRGB = new Mat();
-            Imgproc.cvtColor(matBGR, matRGB, Imgproc.COLOR_BGR2RGB);
+            Imgproc.cvtColor(matBGR, matRGB, Imgproc.COLOR_BGR2RGB);// 将opencv默认的BGR转成RGB
             ImageView imageView1 = findViewById(R.id.img_5);// 合并之后的图片显示的位置
-            Bitmap img3 = Bitmap.createBitmap(pano.arrayWidth(), pano.arrayHeight(), Bitmap.Config.RGB_565);
-//            Bitmap img3 = BitmapFactory.decodeByteArray(imgData, 0, imgData.length);
-            Utils.matToBitmap(matRGB, img3);
-            imageView1.setImageBitmap(img3);
+            Bitmap bitmap = Bitmap.createBitmap(pano.arrayWidth(), pano.arrayHeight(), Bitmap.Config.RGB_565);
+            Utils.matToBitmap(matRGB, bitmap);
+            imageView1.setImageBitmap(bitmap);
         }
     }
 
@@ -159,5 +179,10 @@ public class MainActivity extends AppCompatActivity {
         TextView textView = view.findViewById(android.R.id.message);
         textView.setTextColor(Color.rgb(0x00, 0x00, 0x00));
         toast.show();
+    }
+
+    @Override
+    public void onDismiss(DialogInterface dialogInterface) {
+        infoLog("window num: " + window_num);
     }
 }
