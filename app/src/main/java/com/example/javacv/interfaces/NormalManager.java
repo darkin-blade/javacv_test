@@ -110,7 +110,6 @@ public class NormalManager extends DialogFragment {
         LinearLayout item = new LinearLayout(getContext());// TODO 参数
         item.setLayoutParams(itemParam);
         item.setBackgroundResource(R.color.grey);
-        item.setPadding(item_padding, 0, 0, 0);
 
         LinearLayout type = new LinearLayout(getContext());// 图标的外圈
         type.setLayoutParams(typeParam);

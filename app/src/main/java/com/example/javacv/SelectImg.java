@@ -1,13 +1,17 @@
 package com.example.javacv;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.javacv.interfaces.NormalManager;
@@ -15,6 +19,10 @@ import com.example.javacv.interfaces.NormalManager;
 import java.io.File;
 
 public class SelectImg extends NormalManager {
+    public int box_width = 60;
+    public int box_top = 35;
+    public int box_right = 20;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         myView = inflater.inflate(R.layout.img_select, container);
@@ -37,16 +45,17 @@ public class SelectImg extends NormalManager {
         LinearLayout.LayoutParams itemParam = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, item_height);
         LinearLayout.LayoutParams typeParam = new LinearLayout.LayoutParams(item_height, item_height);
         LinearLayout.LayoutParams iconParam = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        LinearLayout.LayoutParams detailParam = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        LinearLayout.LayoutParams boxParam = new LinearLayout.LayoutParams(box_width, box_width);
         LinearLayout.LayoutParams nameParam = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
 
-        LinearLayout item = new LinearLayout(getContext());// TODO 参数
+        final LinearLayout item = new LinearLayout(getContext());// TODO 参数
         item.setLayoutParams(itemParam);
         item.setBackgroundResource(R.color.grey);
-        item.setPadding(item_padding, 0, 0, 0);
 
         LinearLayout type = new LinearLayout(getContext());// 图标的外圈
+        typeParam.setMargins(type_padding, type_padding, type_padding, type_padding);
         type.setLayoutParams(typeParam);
-        type.setPadding(type_padding, type_padding, type_padding, type_padding);
 
         View icon = new View(getContext());// 图标
         icon.setLayoutParams(iconParam);
@@ -56,10 +65,17 @@ public class SelectImg extends NormalManager {
             icon.setBackgroundResource(R.drawable.item_dir);
         }
 
+        RelativeLayout detail = new RelativeLayout(getContext());
+        detail.setLayoutParams(detailParam);
+
+        final CheckBox checkBox = new CheckBox(getContext());
+        checkBox.setLayoutParams(boxParam);
+        checkBox.setButtonDrawable(R.drawable.checkbox_library);
+
         TextView name = new TextView(getContext());// 文件名
         nameParam.setMargins(name_margin, name_margin, name_margin, name_margin);
         name.setLayoutParams(nameParam);
-        name.setBackgroundResource(R.color.grey);
+        name.setBackgroundResource(R.color.grey);// TODO
         name.setText(itemName);
         name.setPadding(name_padding, name_padding, name_padding, name_padding);
         name.setSingleLine();
@@ -67,6 +83,10 @@ public class SelectImg extends NormalManager {
         type.addView(icon);
         item.addView(type);
         item.addView(name);
+
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) checkBox.getLayoutParams();
+        params.addRule(RelativeLayout.ALIGN_RIGHT);// 单选框靠右
+        checkBox.setLayoutParams(params);
 
         if (itemType == 2) {// 父文件夹
             item.setOnClickListener(new View.OnClickListener() {
@@ -86,8 +106,14 @@ public class SelectImg extends NormalManager {
         } else {// 获取手势库
             item.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View view) {
-                    // TODO 选定该项
+                public void onClick(View v) {
+                    if (checkBox.isChecked()) {
+                        item.setBackgroundResource(R.color.grey);
+                        checkBox.callOnClick();
+                    } else {
+                        item.setBackgroundResource(R.color.grey_light);
+                        checkBox.callOnClick();
+                    }
                 }
             });
         }
