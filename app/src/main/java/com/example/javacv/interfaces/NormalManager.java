@@ -19,23 +19,14 @@ import com.example.javacv.R;
 
 import java.io.File;
 
-public class NormalManager extends DialogFragment {
-    public Button yes;
-    public Button cancel;
-
-    public int item_height = 130;
+public class NormalManager extends DialogFragment {public int item_height = 130;
     public int item_padding = 40;
     public int type_padding = 20;
     public int name_padding = 30;
     public int name_margin = 10;
 
-    public String nameLibrary;// 打开的库的路径
-    public String nameGesture;// 手势名称
-
     public View myView;
     public TextView curPath;// 当前路径
-    public EditText textLibrary;// 新手势库命名
-    public EditText textGesture;// 新收拾命名
 
     @Override
     public void show(FragmentManager fragmentManager, String tag) {
