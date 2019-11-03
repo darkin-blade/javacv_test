@@ -1,11 +1,15 @@
 package com.example.javacv;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
@@ -14,6 +18,9 @@ import java.util.ArrayList;
 
 public class LocalRecognize extends DialogFragment {
     String appPath = MainActivity.appPath;// TODO
+
+    public int img_height = 400;
+    public int img_margin = 20;
 
     public SelectImg selectImg;// 选取图片
 
@@ -25,7 +32,10 @@ public class LocalRecognize extends DialogFragment {
     static public View myView;
     static public FragmentManager fragmentManager;
 
-    public ArrayList<String> imgList;// TODO 所有选中的图片
+    public ArrayList<String> imgList;// TODO 所有添加的图片
+    public ArrayList<String> delList;// TODO 所有要删除的图片
+
+    public LinearLayout imgLayout;// 图片显示列表
 
     @Override
     public void show(FragmentManager fragmentManager, String tag) {
@@ -55,6 +65,7 @@ public class LocalRecognize extends DialogFragment {
 
     public void initData() {
         imgList = new ArrayList<String>();
+        imgLayout = myView.findViewById(R.id.img_list);
     }
 
     public void initBtn() {
@@ -79,7 +90,19 @@ public class LocalRecognize extends DialogFragment {
     }
 
     public void showImg() {// 实时更新图片显示 TODO
-        ;
+        // TODO 先清除所有图片
+        imgLayout.removeAllViews();
+
+        LinearLayout.LayoutParams imgParam = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, img_height);
+        ImageView imageView = new ImageView(getContext());// 重复使用
+        imageView.setLayoutParams(imgParam);
+        Bitmap bitmap;// 重复使用
+
+        for (int i = 0; i < imgList.size(); i ++) {
+            bitmap = BitmapFactory.decodeFile(imgList.get(i));
+            imageView.setImageBitmap(bitmap);
+            imgLayout.addView(imageView);
+        }
     }
 
     public void selectImg() {// 添加图片 TODO
