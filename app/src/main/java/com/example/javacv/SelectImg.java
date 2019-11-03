@@ -185,12 +185,13 @@ public class SelectImg extends NormalManager {
                     if (checkBox.isChecked()) {
                         item.setBackgroundResource(R.color.grey);
                         checkBox.setChecked(false);
-                        imgList.remove(itemPath + "/" + itemName);
-                        MainActivity.infoLog("size: " + imgList.size());// TODO 从list移出
+                        boolean result = imgList.remove(itemPath + "/" + itemName);// TODO 从list移出
+                        MainActivity.infoLog("size: " + imgList.size() + ", " + result);
                     } else {
                         item.setBackgroundResource(R.color.grey_light);
                         checkBox.setChecked(true);
                         imgList.add(itemPath + "/" + itemName);// TODO 添加到list
+                        MainActivity.infoLog("size: " + imgList.size());
                     }
                 }
             });
