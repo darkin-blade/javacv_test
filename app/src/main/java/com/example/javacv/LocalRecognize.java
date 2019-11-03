@@ -151,6 +151,8 @@ public class LocalRecognize extends DialogFragment {
             Utils.matToBitmap(matRGB, bitmap);
             imageView.setImageBitmap(bitmap);
             imgLayout.addView(imageView);
+        } else {
+            MainActivity.infoToast(getContext(), "failed");
         }
     }
 
