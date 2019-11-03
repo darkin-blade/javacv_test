@@ -182,16 +182,12 @@ public class SelectImg extends NormalManager {
             item.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (checkBox.isChecked()) {
+                    if (checkBox.isChecked()) {// 直接调用checkbox的监听,不需重复操作
                         item.setBackgroundResource(R.color.grey);
                         checkBox.setChecked(false);
-                        boolean result = imgList.remove(itemPath + "/" + itemName);// TODO 从list移出
-                        MainActivity.infoLog("size: " + imgList.size() + ", " + result);
                     } else {
                         item.setBackgroundResource(R.color.grey_light);
                         checkBox.setChecked(true);
-                        imgList.add(itemPath + "/" + itemName);// TODO 添加到list
-                        MainActivity.infoLog("size: " + imgList.size());
                     }
                 }
             });
@@ -203,9 +199,11 @@ public class SelectImg extends NormalManager {
                 if (checkBox.isChecked()) {
                     item.setBackgroundResource(R.color.grey_light);
                     imgList.add(itemPath + "/" + itemName);// TODO 添加到list
+                    MainActivity.infoLog("size: " + imgList.size());
                 } else {
                     item.setBackgroundResource(R.color.grey);
-                    MainActivity.infoLog("size: " + imgList.size());// TODO 从list移出
+                    boolean result = imgList.remove(itemPath + "/" + itemName);// TODO 从list移出
+                    MainActivity.infoLog("size: " + imgList.size() + ", " + result);
                 }
             }
         });
