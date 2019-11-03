@@ -106,7 +106,8 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
     public void onDismiss(DialogInterface dialogInterface) {
         infoLog("window num: " + window_num);
         switch (window_num) {// TODO
-            case LOCAL_RECOGNIZE:
+            case SELECT_IMG:
+                localRecognize.showImg();
                 break;
         }
     }

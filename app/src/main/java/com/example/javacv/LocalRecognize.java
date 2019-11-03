@@ -10,6 +10,8 @@ import android.widget.Button;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 
+import java.util.ArrayList;
+
 public class LocalRecognize extends DialogFragment {
     String appPath = MainActivity.appPath;// TODO
 
@@ -23,7 +25,7 @@ public class LocalRecognize extends DialogFragment {
     static public View myView;
     static public FragmentManager fragmentManager;
 
-    // TODO: ArrayList 存储路径
+    public ArrayList<String> imgList;// TODO 所有选中的图片
 
     @Override
     public void show(FragmentManager fragmentManager, String tag) {
@@ -45,9 +47,14 @@ public class LocalRecognize extends DialogFragment {
         myView = inflater.inflate(R.layout.local_recognize, container);
         getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(0x00000000));// 背景透明
 
+        initData();
         initBtn();
 
         return myView;
+    }
+
+    public void initData() {
+        imgList = new ArrayList<String>();
     }
 
     public void initBtn() {
@@ -69,6 +76,10 @@ public class LocalRecognize extends DialogFragment {
                 dismiss();
             }
         });
+    }
+
+    public void showImg() {// 实时更新图片显示 TODO
+        ;
     }
 
     public void selectImg() {// 添加图片 TODO

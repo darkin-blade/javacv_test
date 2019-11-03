@@ -18,8 +18,14 @@ import android.widget.TextView;
 import com.example.javacv.interfaces.NormalManager;
 
 import java.io.File;
+import java.util.ArrayList;
 
 public class SelectImg extends NormalManager {
+    public String lastPath = null;// 路径记忆
+
+    public Button select;// 确定
+    public Button back;// 返回
+
     public int box_width = 60;
     public int icon_height = 90;
     public int box_top = 35;
@@ -27,24 +33,85 @@ public class SelectImg extends NormalManager {
     public int name_top = 10;
     public int name_right = 80;
 
+    public ArrayList<String> imgList;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         myView = inflater.inflate(R.layout.img_select, container);
         getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(0x00000000));// 背景透明
 
-        initPath();
+        initPath();// 路径框
+        initData();
         initButton();
 
         // 调用文件管理器
-        readPath(MainActivity.appPath);// TODO 路径记忆
+        if (lastPath == null) {
+            lastPath = MainActivity.appPath;
+        }
+        readPath(lastPath);
         return myView;
     }
 
-    public void initButton() {
-        // TODO
+    public void initData() {
+        MainActivity.window_num = MainActivity.SELECT_IMG;
+        imgList = new ArrayList<String>();
     }
 
-    public LinearLayout createItem(int itemType, final String itemName, final String itemPath) {
+    public void initButton() {
+        back = myView.findViewById(R.id.button_1);
+        select = myView.findViewById(R.id.button_2);
+
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                imgList.clear();// 清空
+                dismiss();
+            }
+        });
+
+        select.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {// TODO 返回所有选中的图片路径
+                MainActivity.localRecognize.imgList.addAll(imgList);// TODO 合并
+                imgList.clear();// 清空
+                dismiss();
+            }
+        });
+    }
+
+    public void readPath(final String dirPath) {
+        lastPath = dirPath;// TODO 路径记忆
+
+        // 特判根目录
+        if (dirPath == null) {
+            MainActivity.infoToast(getContext(), "can't access this nameLibrary");
+            dismiss();// 强制返回
+            return;
+        }
+
+        // 清空并显示父目录
+        LinearLayout layout = myView.findViewById(R.id.item_list);
+        layout.removeAllViews();
+        createItem(2, "..", dirPath);// 父目录
+
+        // 遍历文件夹
+        File dir = new File(dirPath);
+        File[] items = dir.listFiles();
+        if (items != null) {
+            for (int i = 0; i < items.length; i++) {
+                if (items[i].isDirectory()) {
+                    createItem(1, items[i].getName(), dirPath);
+                } else {
+                    createItem(0, items[i].getName(), dirPath);
+                }
+            }
+        }
+
+        // 显示路径
+        curPath.setText(dirPath);// TODO 简化路径
+    }
+
+    public LinearLayout createItem(final int itemType, final String itemName, final String itemPath) {
         LinearLayout layout = myView.findViewById(R.id.item_list);
         LinearLayout.LayoutParams itemParam = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, item_height);
         LinearLayout.LayoutParams typeParam = new LinearLayout.LayoutParams(icon_height, icon_height);
@@ -118,9 +185,12 @@ public class SelectImg extends NormalManager {
                     if (checkBox.isChecked()) {
                         item.setBackgroundResource(R.color.grey);
                         checkBox.setChecked(false);
+                        imgList.remove(itemPath + "/" + itemName);
+                        MainActivity.infoLog("size: " + imgList.size());// TODO 从list移出
                     } else {
                         item.setBackgroundResource(R.color.grey_light);
                         checkBox.setChecked(true);
+                        imgList.add(itemPath + "/" + itemName);// TODO 添加到list
                     }
                 }
             });
@@ -131,8 +201,10 @@ public class SelectImg extends NormalManager {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (checkBox.isChecked()) {
                     item.setBackgroundResource(R.color.grey_light);
+                    imgList.add(itemPath + "/" + itemName);// TODO 添加到list
                 } else {
                     item.setBackgroundResource(R.color.grey);
+                    MainActivity.infoLog("size: " + imgList.size());// TODO 从list移出
                 }
             }
         });
