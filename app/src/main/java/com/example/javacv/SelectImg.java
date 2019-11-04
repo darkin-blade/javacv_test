@@ -155,13 +155,17 @@ public class SelectImg extends NormalManager {
         type.addView(icon);
         item.addView(type);
         detail.addView(name);
-        detail.addView(checkBox);
+        if (itemType == 0) {
+            detail.addView(checkBox);
+        }
         item.addView(detail);
 
         // 设置靠父元素左/右
-        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) checkBox.getLayoutParams();
-        params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);// 单选框靠右
-        checkBox.setLayoutParams(params);
+        if (itemType == 0) {
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) checkBox.getLayoutParams();
+            params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);// 单选框靠右
+            checkBox.setLayoutParams(params);
+        }
 
         if (itemType == 2) {// 父文件夹
             item.setOnClickListener(new View.OnClickListener() {

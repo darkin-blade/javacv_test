@@ -4,10 +4,13 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -108,21 +111,49 @@ public class LocalRecognize extends DialogFragment {
         // TODO 先清除所有图片
         imgLayout.removeAllViews();
 
-        LinearLayout.LayoutParams imgParam = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, img_height);
+        LinearLayout.LayoutParams frameParam = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, img_height);
+        LinearLayout.LayoutParams imgParam = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        LinearLayout.LayoutParams boxParam = new LinearLayout.LayoutParams(0, 0);// 不显示
         imgParam.setMargins(img_margin, img_margin, img_margin, img_margin);
         Bitmap bitmap;// 重复使用
 
         for (int i = 0; i < imgList.size(); i ++) {
-            ImageView imageView = new ImageView(getContext());
+            // 外框
+            final LinearLayout imageFrame = new LinearLayout(getContext());
+            imageFrame.setLayoutParams(frameParam);
+
+            // 只用于判断选取
+            final CheckBox checkBox = new CheckBox(getContext());
+            checkBox.setLayoutParams(boxParam);
+
+            // 图片元素
+            final ImageView imageView = new ImageView(getContext());
             imageView.setLayoutParams(imgParam);
             bitmap = BitmapFactory.decodeFile(imgList.get(i));
             imageView.setImageBitmap(bitmap);
-            imgLayout.addView(imageView);
+            imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {// TODO
+                    if (checkBox.isChecked()) {// 直接调用checkbox的监听,不需重复操作
+                        imageFrame.setBackgroundResource(R.color.grey);
+                        checkBox.setChecked(false);
+                    } else {
+                        imageFrame.setBackgroundResource(R.color.grey_light);
+                        checkBox.setChecked(true);
+                    }
+                }
+            });
+
+            // 添加元素
+            imageFrame.addView(checkBox);
+            imageFrame.addView(imageView);
+            imgLayout.addView(imageFrame);
         }
     }
 
     public void combineImg() {// 添加图片 TODO
-        LinearLayout.LayoutParams imgParam = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, img_height);
+        LinearLayout.LayoutParams frameParam = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, img_height);
+        LinearLayout.LayoutParams imgParam = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         imgParam.setMargins(img_margin, img_margin, img_margin, img_margin);
         Bitmap bitmap;
 
@@ -150,7 +181,10 @@ public class LocalRecognize extends DialogFragment {
             bitmap = Bitmap.createBitmap(combined.arrayWidth(), combined.arrayHeight(), Bitmap.Config.RGB_565);
             Utils.matToBitmap(matRGB, bitmap);
             imageView.setImageBitmap(bitmap);
-            imgLayout.addView(imageView);
+
+            LinearLayout imageFrame = new LinearLayout(getContext());
+            imageFrame.addView(imageView);
+            imgLayout.addView(imageFrame);
         } else {
             MainActivity.infoToast(getContext(), "failed");
         }
