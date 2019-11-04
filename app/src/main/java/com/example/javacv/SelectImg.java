@@ -101,7 +101,7 @@ public class SelectImg extends NormalManager {
             for (int i = 0; i < items.length; i++) {
                 if (items[i].isDirectory()) {
                     createItem(1, items[i].getName(), dirPath);
-                } else {
+                } else {// TODO 特判图片文件
                     createItem(0, items[i].getName(), dirPath);
                 }
             }
