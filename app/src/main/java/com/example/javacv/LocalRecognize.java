@@ -200,6 +200,12 @@ public class LocalRecognize extends DialogFragment {
             bitmap = Bitmap.createBitmap(combined.arrayWidth(), combined.arrayHeight(), Bitmap.Config.RGB_565);
             Utils.matToBitmap(matRGB, bitmap);
             imageView.setImageBitmap(bitmap);
+            imageView.setOnClickListener(new View.OnClickListener() {// 保存图片
+                @Override
+                public void onClick(View v) {
+                    ;// TODO
+                }
+            });
 
             LinearLayout imageFrame = new LinearLayout(getContext());
             imageFrame.setLayoutParams(frameParam);
