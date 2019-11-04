@@ -34,6 +34,7 @@ public class LocalRecognize extends DialogFragment {
     public int img_margin = 20;
 
     public SelectImg selectImg;// 选取图片
+    public SaveImg saveImg;
 
     public Button btnAdd;// 添加本地图片
     public Button btnDel;// 删除添加的图片
@@ -55,6 +56,7 @@ public class LocalRecognize extends DialogFragment {
 
         this.fragmentManager = fragmentManager;
         selectImg = new SelectImg();// 初始化文件浏览器
+        saveImg = new SaveImg();// 初始化文件管理器
     }
 
     @Override
@@ -89,7 +91,7 @@ public class LocalRecognize extends DialogFragment {
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                selectImg.show(fragmentManager, "select");
+                selectImg.show(fragmentManager, "save");
             }
         });
 

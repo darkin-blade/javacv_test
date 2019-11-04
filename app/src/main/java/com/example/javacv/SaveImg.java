@@ -8,8 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -25,7 +23,7 @@ import static org.bytedeco.opencv.global.opencv_imgcodecs.imread;
 public class SaveImg extends NormalManager {
     public String lastPath = null;// 路径记忆
 
-    public Button select;// 确定
+    public Button save;// 确定
     public Button back;// 返回
 
     public int box_width = 60;
@@ -61,7 +59,7 @@ public class SaveImg extends NormalManager {
 
     public void initButton() {
         back = myView.findViewById(R.id.button_1);
-        select = myView.findViewById(R.id.button_2);
+        save = myView.findViewById(R.id.button_2);
 
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,7 +69,7 @@ public class SaveImg extends NormalManager {
             }
         });
 
-        select.setOnClickListener(new View.OnClickListener() {
+        save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {// TODO 返回所有选中的图片路径
                 MainActivity.localRecognize.imgList.addAll(imgList);// TODO 合并
