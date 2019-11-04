@@ -36,6 +36,8 @@ public class LocalRecognize extends DialogFragment {
     public SelectImg selectImg;// 选取图片
     public SaveImg saveImg;
 
+    public Bitmap combinedImg;// 合并后的图片
+
     public Button btnAdd;// 添加本地图片
     public Button btnDel;// 删除添加的图片
     public Button btnWork;// 生成->保存合并的图片
@@ -55,8 +57,6 @@ public class LocalRecognize extends DialogFragment {
         MainActivity.window_num = MainActivity.LOCAL_RECOGNIZE;
 
         this.fragmentManager = fragmentManager;
-        selectImg = new SelectImg();// 初始化文件浏览器
-        saveImg = new SaveImg();// 初始化文件管理器
     }
 
     @Override
@@ -76,10 +76,13 @@ public class LocalRecognize extends DialogFragment {
         return myView;
     }
 
-    public void initData() {
+    public void initData() {// TODO
         imgList = new ArrayList<String>();
         delList = new ArrayList<String>();
+        combinedImg = null;// TODO 初始化为空
         imgLayout = myView.findViewById(R.id.img_list);
+        selectImg = new SelectImg();// 初始化文件浏览器
+        saveImg = new SaveImg();// 初始化文件管理器
     }
 
     public void initBtn() {
@@ -91,6 +94,7 @@ public class LocalRecognize extends DialogFragment {
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                combinedImg = null;// 清除结果
                 selectImg.show(fragmentManager, "save");
             }
         });
@@ -116,6 +120,7 @@ public class LocalRecognize extends DialogFragment {
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                combinedImg = null;// 清除结果
                 dismiss();
             }
         });
@@ -176,7 +181,6 @@ public class LocalRecognize extends DialogFragment {
         LinearLayout.LayoutParams frameParam = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, img_height);
         LinearLayout.LayoutParams imgParam = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         imgParam.setMargins(img_margin, img_margin, img_margin, img_margin);
-        Bitmap bitmap;
 
         // 读取图片
         MatVector imgVector = new MatVector();
@@ -199,13 +203,13 @@ public class LocalRecognize extends DialogFragment {
             Imgproc.cvtColor(matBGR, matRGB, Imgproc.COLOR_BGR2RGB);// 将opencv默认的BGR转成RGB
             ImageView imageView = new ImageView(getContext());// TODO 合并之后的图片显示的位置
             imageView.setLayoutParams(imgParam);
-            bitmap = Bitmap.createBitmap(combined.arrayWidth(), combined.arrayHeight(), Bitmap.Config.RGB_565);
-            Utils.matToBitmap(matRGB, bitmap);
-            imageView.setImageBitmap(bitmap);
+            combinedImg = Bitmap.createBitmap(combined.arrayWidth(), combined.arrayHeight(), Bitmap.Config.RGB_565);
+            Utils.matToBitmap(matRGB, combinedImg);
+            imageView.setImageBitmap(combinedImg);
             imageView.setOnClickListener(new View.OnClickListener() {// 保存图片
                 @Override
-                public void onClick(View v) {
-                    ;// TODO
+                public void onClick(View v) {// TODO 点击保存
+                    saveImg.show(fragmentManager, "save");
                 }
             });
 

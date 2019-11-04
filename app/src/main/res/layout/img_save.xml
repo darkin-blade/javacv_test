@@ -9,7 +9,7 @@
     android:orientation="vertical">
 
     <TextView
-        android:text="Select images"
+        android:text="Save as"
         style="@style/title_white">
     </TextView>
 

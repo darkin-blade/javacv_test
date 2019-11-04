@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -16,13 +17,18 @@ import android.widget.TextView;
 import com.example.javacv.interfaces.NormalManager;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import static org.bytedeco.opencv.global.opencv_imgcodecs.imread;
 
 public class SaveImg extends NormalManager {
     public String lastPath = null;// 路径记忆
+    public String imgPath;
 
+    public EditText imgName;
     public Button save;// 确定
     public Button back;// 返回
 
@@ -32,8 +38,6 @@ public class SaveImg extends NormalManager {
     public int box_right = 10;
     public int name_top = 10;
     public int name_right = 80;
-
-    public ArrayList<String> imgList;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -54,7 +58,8 @@ public class SaveImg extends NormalManager {
 
     public void initData() {
         MainActivity.window_num = MainActivity.SELECT_IMG;
-        imgList = new ArrayList<String>();
+        imgPath = null;
+        imgName = myView.findViewById(R.id.img_name);
     }
 
     public void initButton() {
@@ -64,7 +69,6 @@ public class SaveImg extends NormalManager {
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                imgList.clear();// 清空
                 dismiss();
             }
         });
@@ -72,8 +76,42 @@ public class SaveImg extends NormalManager {
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {// TODO 返回所有选中的图片路径
-                MainActivity.localRecognize.imgList.addAll(imgList);// TODO 合并
-                imgList.clear();// 清空
+                imgPath = curPath.getText().toString() + "/" + imgName.getText().toString();// 图片保存的路径
+
+                // 图片名不能为空
+                if (imgName.getText().toString().length() == 0) {
+                    MainActivity.infoToast(getContext(), "image name can't be empty");
+                    return;
+                }
+
+                // 图片保存路径必须有效
+                if (curPath.getText().toString().length() == 0) {
+                    MainActivity.infoToast(getContext(), "invalid path");
+                    return;
+                }
+
+                // 不能重名
+                File file = new File(imgPath);
+                if (file.exists()) {// 有重名
+                    MainActivity.infoToast(getContext(), imgName + " already exists");
+                    return;
+                }
+
+                try {
+                    FileOutputStream fileOutputStream = new FileOutputStream(file);
+                    Bitmap bitmap = MainActivity.localRecognize.combinedImg;
+                    if (bitmap != null) {// TODO 有合法的结果
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
+                        fileOutputStream.flush();// TODO
+                        fileOutputStream.close();
+                        MainActivity.infoToast(getContext(), "saved as " + imgPath);
+                    }
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
                 dismiss();
             }
         });
@@ -123,7 +161,6 @@ public class SaveImg extends NormalManager {
         LinearLayout.LayoutParams typeParam = new LinearLayout.LayoutParams(icon_height, icon_height);
         LinearLayout.LayoutParams iconParam = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         LinearLayout.LayoutParams detailParam = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-        LinearLayout.LayoutParams boxParam = new LinearLayout.LayoutParams(box_width, box_width);
         LinearLayout.LayoutParams nameParam = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
 
         final LinearLayout item = new LinearLayout(getContext());// TODO 参数
