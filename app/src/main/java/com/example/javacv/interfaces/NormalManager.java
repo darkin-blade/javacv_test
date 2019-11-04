@@ -64,7 +64,7 @@ public class NormalManager extends DialogFragment {public int item_height = 130;
     public void readPath(final String dirPath) {
         // 特判根目录
         if (dirPath == null) {
-            MainActivity.infoToast(getContext(), "can't access this nameLibrary");
+            MainActivity.infoToast(getContext(), "can't access this nameLibrary");// TODO
             dismiss();// 强制返回
             return;
         }

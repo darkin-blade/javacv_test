@@ -92,7 +92,8 @@ public class SelectImg extends NormalManager {
 
         // 特判根目录
         if (dirPath == null) {
-            MainActivity.infoToast(getContext(), "can't access this nameLibrary");
+            MainActivity.infoToast(getContext(), "can't access this path");
+            lastPath = MainActivity.appPath;// 重置路径
             dismiss();// 强制返回
             return;
         }
@@ -147,7 +148,9 @@ public class SelectImg extends NormalManager {
             icon.setBackgroundResource(R.drawable.item_file);
         } else if (itemType == 3) {// TODO 显示图片缩略图
             Bitmap bitmap = BitmapFactory.decodeFile(itemPath + "/" + itemName);
-            Bitmap thumbnail = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth() / 10, bitmap.getHeight() / 10, true);// TODO 缩略图
+            int width = 60;
+            int height = bitmap.getHeight() * 60 / bitmap.getWidth();
+            Bitmap thumbnail = Bitmap.createScaledBitmap(bitmap, width, height, true);// TODO 缩略图
             icon.setImageBitmap(thumbnail);
         } else {// 文件夹
             icon.setBackgroundResource(R.drawable.item_dir);
