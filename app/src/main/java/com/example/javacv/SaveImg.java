@@ -22,7 +22,7 @@ import java.util.ArrayList;
 
 import static org.bytedeco.opencv.global.opencv_imgcodecs.imread;
 
-public class SelectImg extends NormalManager {
+public class SaveImg extends NormalManager {
     public String lastPath = null;// 路径记忆
 
     public Button select;// 确定
@@ -153,11 +153,6 @@ public class SelectImg extends NormalManager {
         RelativeLayout detail = new RelativeLayout(getContext());
         detail.setLayoutParams(detailParam);
 
-        final CheckBox checkBox = new CheckBox(getContext());
-        boxParam.setMargins(box_right, box_top, box_right, box_top);
-        checkBox.setLayoutParams(boxParam);
-        checkBox.setButtonDrawable(R.drawable.checkbox_library);
-
         TextView name = new TextView(getContext());// 文件名
         nameParam.setMargins(0, name_top, name_right, name_top);
         name.setLayoutParams(nameParam);
@@ -169,17 +164,7 @@ public class SelectImg extends NormalManager {
         type.addView(icon);
         item.addView(type);
         detail.addView(name);
-        if (itemType == 3) {// 只有图片才有复选框
-            detail.addView(checkBox);
-        }
         item.addView(detail);
-
-        // 设置靠父元素左/右
-        if (itemType == 3) {
-            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) checkBox.getLayoutParams();
-            params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);// 单选框靠右
-            checkBox.setLayoutParams(params);
-        }
 
         if (itemType == 2) {// 父文件夹
             item.setOnClickListener(new View.OnClickListener() {
@@ -196,35 +181,7 @@ public class SelectImg extends NormalManager {
                     readPath(itemPath + "/" + itemName);
                 }
             });
-        } else if (itemType == 3) {// TODO 图片的复选功能
-            item.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (checkBox.isChecked()) {// 直接调用checkbox的监听,不需重复操作
-                        item.setBackgroundResource(R.color.grey);
-                        checkBox.setChecked(false);
-                    } else {
-                        item.setBackgroundResource(R.color.grey_light);
-                        checkBox.setChecked(true);
-                    }
-                }
-            });
         }
-
-        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (checkBox.isChecked()) {
-                    item.setBackgroundResource(R.color.grey_light);
-                    imgList.add(itemPath + "/" + itemName);// TODO 添加到list
-                    MainActivity.infoLog("size: " + imgList.size());
-                } else {
-                    item.setBackgroundResource(R.color.grey);
-                    boolean result = imgList.remove(itemPath + "/" + itemName);// TODO 从list移出
-                    MainActivity.infoLog("size: " + imgList.size() + ", " + result);
-                }
-            }
-        });
 
         layout.addView(item);
 
