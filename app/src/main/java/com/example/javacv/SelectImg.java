@@ -105,8 +105,8 @@ public class SelectImg extends NormalManager {
                 if (items[i].isDirectory()) {
                     createItem(1, items[i].getName(), dirPath);
                 } else {// TODO 特判图片文件
-                    org.bytedeco.opencv.opencv_core.Mat mat = imread(dirPath + "/" + items[i].getName());
-                    if (mat.arrayWidth() != 0 && mat.arrayHeight() != 0) {// TODO 测试是否为图片文件
+                    Bitmap bitmap = BitmapFactory.decodeFile(dirPath + "/" + items[i].getName());
+                    if (bitmap.getWidth() != 0 && bitmap.getHeight() != 0) {// TODO 测试是否为图片文件
                         createItem(3, items[i].getName(), dirPath);
                     } else {
                         createItem(0, items[i].getName(), dirPath);
