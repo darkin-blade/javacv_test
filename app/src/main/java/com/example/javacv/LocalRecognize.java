@@ -76,6 +76,7 @@ public class LocalRecognize extends DialogFragment {
 
     public void initData() {
         imgList = new ArrayList<String>();
+        delList = new ArrayList<String>();
         imgLayout = myView.findViewById(R.id.img_list);
     }
 
@@ -96,6 +97,17 @@ public class LocalRecognize extends DialogFragment {
             @Override
             public void onClick(View v) {
                 combineImg();
+            }
+        });
+
+        btnDel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                for (int i = 0; i < delList.size(); i ++) {
+                    imgList.remove(delList.get(i));
+                }
+                delList.clear();// 清空
+                showImg();// 更新图片
             }
         });
 
@@ -131,15 +143,22 @@ public class LocalRecognize extends DialogFragment {
             imageView.setLayoutParams(imgParam);
             bitmap = BitmapFactory.decodeFile(imgList.get(i));
             imageView.setImageBitmap(bitmap);
+
+            // 复选功能,用于删除
+            final String name = imgList.get(i);// TODO
+            MainActivity.infoLog("i: " + i + ", " + name + ": " + (imgList.get(i) == null));
             imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {// TODO
+                    MainActivity.infoLog("name: " + name);
                     if (checkBox.isChecked()) {// 直接调用checkbox的监听,不需重复操作
                         imageFrame.setBackgroundResource(R.color.grey);
                         checkBox.setChecked(false);
+                        delList.remove(name);
                     } else {
                         imageFrame.setBackgroundResource(R.color.grey_light);
                         checkBox.setChecked(true);
+                        delList.add(name);
                     }
                 }
             });
