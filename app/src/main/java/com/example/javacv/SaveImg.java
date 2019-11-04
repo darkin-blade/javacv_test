@@ -41,7 +41,7 @@ public class SaveImg extends NormalManager {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        myView = inflater.inflate(R.layout.img_select, container);
+        myView = inflater.inflate(R.layout.img_save, container);
         getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(0x00000000));// 背景透明
 
         initPath();// 路径框

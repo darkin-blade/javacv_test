@@ -109,6 +109,7 @@ public class LocalRecognize extends DialogFragment {
         btnDel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                combinedImg = null;// 清除结果
                 for (int i = 0; i < delList.size(); i ++) {
                     imgList.remove(delList.get(i));
                 }
