@@ -202,6 +202,7 @@ public class LocalRecognize extends DialogFragment {
             imageView.setImageBitmap(bitmap);
 
             LinearLayout imageFrame = new LinearLayout(getContext());
+            imageFrame.setLayoutParams(frameParam);
             imageFrame.addView(imageView);
             imgLayout.addView(imageFrame);
         } else {

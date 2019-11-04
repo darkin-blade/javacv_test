@@ -2,8 +2,13 @@ package com.example.javacv;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -19,6 +25,8 @@ import com.example.javacv.interfaces.NormalManager;
 
 import java.io.File;
 import java.util.ArrayList;
+
+import static org.bytedeco.opencv.global.opencv_imgcodecs.imread;
 
 public class SelectImg extends NormalManager {
     public String lastPath = null;// 路径记忆
@@ -102,7 +110,12 @@ public class SelectImg extends NormalManager {
                 if (items[i].isDirectory()) {
                     createItem(1, items[i].getName(), dirPath);
                 } else {// TODO 特判图片文件
-                    createItem(0, items[i].getName(), dirPath);
+                    org.bytedeco.opencv.opencv_core.Mat mat = imread(dirPath + "/" + items[i].getName());
+                    if (mat.arrayWidth() != 0 && mat.arrayHeight() != 0) {// TODO 测试是否为图片文件
+                        createItem(3, items[i].getName(), dirPath);
+                    } else {
+                        createItem(0, items[i].getName(), dirPath);
+                    }
                 }
             }
         }
@@ -128,10 +141,14 @@ public class SelectImg extends NormalManager {
         typeParam.setMargins(type_padding, type_padding, type_padding, type_padding);
         type.setLayoutParams(typeParam);
 
-        View icon = new View(getContext());// 图标
+        ImageView icon = new ImageView(getContext());// 图标
         icon.setLayoutParams(iconParam);
         if (itemType == 0) {// 文件
             icon.setBackgroundResource(R.drawable.item_file);
+        } else if (itemType == 3) {// TODO 显示图片缩略图
+            Bitmap bitmap = BitmapFactory.decodeFile(itemPath + "/" + itemName);
+            Bitmap thumbnail = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth() / 10, bitmap.getHeight() / 10, true);// TODO 缩略图
+            icon.setImageBitmap(thumbnail);
         } else {// 文件夹
             icon.setBackgroundResource(R.drawable.item_dir);
         }
@@ -155,13 +172,13 @@ public class SelectImg extends NormalManager {
         type.addView(icon);
         item.addView(type);
         detail.addView(name);
-        if (itemType == 0) {
+        if (itemType == 3) {// 只有图片才有复选框
             detail.addView(checkBox);
         }
         item.addView(detail);
 
         // 设置靠父元素左/右
-        if (itemType == 0) {
+        if (itemType == 3) {
             RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) checkBox.getLayoutParams();
             params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);// 单选框靠右
             checkBox.setLayoutParams(params);
@@ -182,7 +199,7 @@ public class SelectImg extends NormalManager {
                     readPath(itemPath + "/" + itemName);
                 }
             });
-        } else {// 获取手势库
+        } else if (itemType == 3) {// TODO 图片的复选功能
             item.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
