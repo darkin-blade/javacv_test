@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import static org.bytedeco.opencv.global.opencv_imgcodecs.imread;
 
@@ -31,6 +30,7 @@ public class SaveImg extends NormalManager {
     public EditText imgName;
     public Button save;// 确定
     public Button back;// 返回
+    public Bitmap combinedImg;// 合并后的图片
 
     public int box_width = 60;
     public int icon_height = 90;
@@ -57,7 +57,7 @@ public class SaveImg extends NormalManager {
     }
 
     public void initData() {
-        MainActivity.window_num = MainActivity.SELECT_IMG;
+        MainActivity.window_num = MainActivity.SAVE_IMG;
         imgPath = null;
         imgName = myView.findViewById(R.id.img_name);
     }
@@ -99,9 +99,8 @@ public class SaveImg extends NormalManager {
 
                 try {
                     FileOutputStream fileOutputStream = new FileOutputStream(file);
-                    Bitmap bitmap = MainActivity.localRecognize.combinedImg;
-                    if (bitmap != null) {// TODO 有合法的结果
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
+                    if (combinedImg != null) {// TODO 有合法的结果
+                        combinedImg.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
                         fileOutputStream.flush();// TODO
                         fileOutputStream.close();
                         MainActivity.infoToast(getContext(), "saved as " + imgPath);

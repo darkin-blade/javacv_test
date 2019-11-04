@@ -198,7 +198,8 @@ public class LocalRecognize extends DialogFragment {
 
         // 显示合并的图片 TODO
         if (result == 0) {// 如果成功
-            Mat matBGR = new Mat(combined.address());// TODO 颜色异常
+            // 颜色转换
+            Mat matBGR = new Mat(combined.address());
             Mat matRGB = new Mat();
             Imgproc.cvtColor(matBGR, matRGB, Imgproc.COLOR_BGR2RGB);// 将opencv默认的BGR转成RGB
             ImageView imageView = new ImageView(getContext());// TODO 合并之后的图片显示的位置
@@ -206,6 +207,9 @@ public class LocalRecognize extends DialogFragment {
             combinedImg = Bitmap.createBitmap(combined.arrayWidth(), combined.arrayHeight(), Bitmap.Config.RGB_565);
             Utils.matToBitmap(matRGB, combinedImg);
             imageView.setImageBitmap(combinedImg);
+
+            // `保存`功能
+            saveImg.combinedImg = combinedImg;
             imageView.setOnClickListener(new View.OnClickListener() {// 保存图片
                 @Override
                 public void onClick(View v) {// TODO 点击保存

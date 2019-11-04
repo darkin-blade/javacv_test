@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
     static public final int LOCAL_RECOGNIZE = 1;// 本地选取图片
     static public final int TAKE_PICTURES = 2;// 拍照获取图片
     static public final int SELECT_IMG = 3;// 本地文件管理器
+    static public final int SAVE_IMG = 4;// 保存合并的图片到本地
 
     static LocalRecognize localRecognize;// 本地选取
     static TakePicutures takePicutures;// 拍照获取
