@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.example.javacv.interfaces.ManagerImg;
 import com.example.javacv.interfaces.NormalManager;
 
 import java.io.File;
@@ -37,6 +38,8 @@ public class SelectImg extends NormalManager {
 
     public ArrayList<String> imgList;
 
+    public ManagerImg managerImg;// 图片处理类
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         myView = inflater.inflate(R.layout.img_select, container);
@@ -57,6 +60,7 @@ public class SelectImg extends NormalManager {
     public void initData() {
         MainActivity.window_num = MainActivity.SELECT_IMG;
         imgList = new ArrayList<String>();
+        managerImg = new ManagerImg();// 图片处理类
     }
 
     public void initButton() {
@@ -105,8 +109,7 @@ public class SelectImg extends NormalManager {
                 if (items[i].isDirectory()) {
                     createItem(1, items[i].getName(), dirPath);
                 } else {// TODO 特判图片文件
-                    Bitmap bitmap = BitmapFactory.decodeFile(dirPath + "/" + items[i].getName());
-                    if (bitmap != null) {// TODO 测试是否为图片文件
+                    if (managerImg.isImg(dirPath + "/" + items[i].getName()) == true) {// TODO 测试是否为图片文件
                         createItem(3, items[i].getName(), dirPath);
                     } else {
                         createItem(0, items[i].getName(), dirPath);

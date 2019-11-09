@@ -127,8 +127,7 @@ public class LocalRecognize extends DialogFragment {
         });
     }
 
-    public void showImg() {// 实时更新图片显示 TODO
-        // TODO 先清除所有图片
+    public void showImg() {// 实时更新图片显示 TODO 以缩略图的方式显示
         imgLayout.removeAllViews();
 
         LinearLayout.LayoutParams frameParam = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, img_height);
@@ -178,14 +177,14 @@ public class LocalRecognize extends DialogFragment {
         }
     }
 
-    public void combineImg() {// 添加图片 TODO
+    public void combineImg() {// 合并图片 TODO 以缩略图的方式显示
         LinearLayout.LayoutParams frameParam = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, img_height);
         LinearLayout.LayoutParams imgParam = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         imgParam.setMargins(img_margin, img_margin, img_margin, img_margin);
 
         // 读取图片
         MatVector imgVector = new MatVector();
-        org.bytedeco.opencv.opencv_core.Mat mat;//  TODO 重复使用
+        org.bytedeco.opencv.opencv_core.Mat mat;
         for (int i = 0; i < imgList.size(); i ++) {
             mat = imread(imgList.get(i));
             imgVector.push_back(mat);
