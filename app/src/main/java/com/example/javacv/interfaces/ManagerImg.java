@@ -11,10 +11,6 @@ import android.provider.MediaStore.Images.*;
 
 import com.example.javacv.MainActivity;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-
 public class ManagerImg {
     public Context context;
 
@@ -24,6 +20,10 @@ public class ManagerImg {
 
     public boolean isImg(String imgPath) {// 判断是否是图片
         return true;// TODO
+    }
+
+    public Bitmap LoadImg(String imgPath, int width, int height) {// 加载图片 TODO
+        return null;
     }
 
     public Bitmap ThumbImg(String imgPath, int width, int height) {// 转换成缩略图
