@@ -34,12 +34,14 @@ public class ManagerImg {
                 null,
                 null);
         if (cursor.moveToFirst()) {
+            // TODO
             do {
-                MainActivity.infoLog(imgPath + ": ");
-                MainActivity.infoLog(cursor.getString(1));
                 imgID = cursor.getInt(0);
             } while (cursor.moveToNext());
             cursor.close();
+            MainActivity.infoLog(imgPath + ": ");
+            MainActivity.infoLog("id: " + imgID);
+
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inDither = false;// 不采用抖动解码()
             options.inPreferredConfig = Bitmap.Config.RGB_565;
