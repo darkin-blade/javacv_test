@@ -60,7 +60,7 @@ public class SelectImg extends NormalManager {
     public void initData() {
         MainActivity.window_num = MainActivity.SELECT_IMG;
         imgList = new ArrayList<String>();
-        managerImg = new ManagerImg();// 图片处理类
+        managerImg = new ManagerImg(getContext());// 图片处理类
     }
 
     public void initButton() {
@@ -144,11 +144,12 @@ public class SelectImg extends NormalManager {
         if (itemType == 0) {// 文件
             icon.setBackgroundResource(R.drawable.item_file);
         } else if (itemType == 3) {// TODO 显示图片缩略图
-            Bitmap bitmap = BitmapFactory.decodeFile(itemPath + "/" + itemName);
-            int width = 60;
-            int height = bitmap.getHeight() * 60 / bitmap.getWidth();
-            Bitmap thumbnail = Bitmap.createScaledBitmap(bitmap, width, height, true);// TODO 缩略图
-            icon.setImageBitmap(thumbnail);
+            Bitmap bitmap = managerImg.ThumbImg(itemPath + "/" + itemName, 60, 60);// TODO 长宽
+//            Bitmap bitmap = BitmapFactory.decodeFile(itemPath + "/" + itemName);
+//            int width = 60;
+//            int height = bitmap.getHeight() * 60 / bitmap.getWidth();
+//            Bitmap thumbnail = Bitmap.createScaledBitmap(bitmap, width, height, true);// TODO 缩略图
+            icon.setImageBitmap(bitmap);
         } else {// 文件夹
             icon.setBackgroundResource(R.drawable.item_dir);
         }
