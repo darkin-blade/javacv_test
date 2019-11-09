@@ -27,43 +27,47 @@ public class ManagerImg {
     }
 
     public Bitmap ThumbImg(String imgPath, int width, int height) {// 转换成缩略图
-        ArrayList<HashMap<String, String>> thumbList = new ArrayList<>();// TODO 存储结果
-
         // 查询缩略图表单
+        Uri uri = Media.EXTERNAL_CONTENT_URI;
+        String[] projection = {
+                Media._ID,
+                Media.DATA
+        };
+//        String selection = null;
+        String selection = Media.DATA + " = '" + imgPath + "'";// 相当于数据库的where
+        String[] selectionArgs = null;
+        String sortOrder = null;
+
         ContentResolver contentResolver = context.getContentResolver();
         Cursor cursor = contentResolver.query(// TODO
-                Thumbnails.EXTERNAL_CONTENT_URI,
-                new String [] {
-                        Thumbnails.IMAGE_ID,
-                        Thumbnails.DATA
-                },
-                null,
-                null,
-                null);
+                uri,
+                projection,
+                selection,
+                selectionArgs,
+                sortOrder
+        );
+
+        if (cursor == null || cursor.getCount() == 0) {// 没有结果
+            MainActivity.infoLog(imgPath + ": null");
+            return null;
+        }
 
         // 有查询结果
         if (cursor.moveToFirst()) {// TODO
-            int thumb_id;
-            String thumb_data;
-            int image_idColumn = cursor.getColumnIndex(Thumbnails.IMAGE_ID);
-            int dataColumn = cursor.getColumnIndex(Thumbnails.DATA);
-            do {
-                thumb_id = cursor.getInt(image_idColumn);
-                thumb_data = cursor.getString(dataColumn);
-
-                // 存储hash表
-                HashMap<String, String> thumb_hash = new HashMap<>();// TODO
-                thumb_hash.put("thumb_id", thumb_id + "");
-                thumb_hash.put("thumb_data", thumb_data);
-
-                thumbList.add(thumb_hash);
-            } while (cursor.moveToNext());
+            int img_id = cursor.getInt(0);
+//            do {
+//                MainActivity.infoLog(cursor.getString(1));
+//            } while (cursor.moveToNext());
+            MainActivity.infoLog("count: " + cursor.getCount());
             cursor.close();
 
-            // 获取图片 TODO
-            File file = new File(imgPath);
-            Uri uri = Uri.fromFile(file);
-            MainActivity.infoLog(imgPath + ": " + uri);
+            // 返回缩略图
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inDither = false;
+            options.inPreferredConfig = Bitmap.Config.RGB_565;
+            Bitmap bitmap = Thumbnails.getThumbnail(contentResolver, img_id, MediaStore.Video.Thumbnails.MINI_KIND, options);
+            MainActivity.infoLog("null: " + (bitmap == null));
+            return bitmap;
         } else {
             MainActivity.infoLog(imgPath + ": null");
         }
