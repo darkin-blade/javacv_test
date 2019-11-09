@@ -5,9 +5,15 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.provider.MediaStore;
+import android.provider.MediaStore.Images.*;
 
 import com.example.javacv.MainActivity;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class ManagerImg {
     public Context context;
@@ -21,31 +27,43 @@ public class ManagerImg {
     }
 
     public Bitmap ThumbImg(String imgPath, int width, int height) {// 转换成缩略图
-        String thumbPath = null;// 缩略图路径
-        int imgID = -1;
-        ContentResolver contentResolver = context.getContentResolver();// TODO
-        Cursor cursor = contentResolver.query(
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                new String[] {// TODO 返回的列
-                        MediaStore.Images.Media._ID,
-                        MediaStore.Images.Media.DATA,
+        ArrayList<HashMap<String, String>> thumbList = new ArrayList<>();// TODO 存储结果
+
+        // 查询缩略图表单
+        ContentResolver contentResolver = context.getContentResolver();
+        Cursor cursor = contentResolver.query(// TODO
+                Thumbnails.EXTERNAL_CONTENT_URI,
+                new String [] {
+                        Thumbnails.IMAGE_ID,
+                        Thumbnails.DATA
                 },
                 null,
                 null,
                 null);
-        if (cursor.moveToFirst()) {
-            // TODO
+
+        // 有查询结果
+        if (cursor.moveToFirst()) {// TODO
+            int thumb_id;
+            String thumb_data;
+            int image_idColumn = cursor.getColumnIndex(Thumbnails.IMAGE_ID);
+            int dataColumn = cursor.getColumnIndex(Thumbnails.DATA);
             do {
-                imgID = cursor.getInt(0);
+                thumb_id = cursor.getInt(image_idColumn);
+                thumb_data = cursor.getString(dataColumn);
+
+                // 存储hash表
+                HashMap<String, String> thumb_hash = new HashMap<>();// TODO
+                thumb_hash.put("thumb_id", thumb_id + "");
+                thumb_hash.put("thumb_data", thumb_data);
+
+                thumbList.add(thumb_hash);
             } while (cursor.moveToNext());
             cursor.close();
-            MainActivity.infoLog(imgPath + ": ");
-            MainActivity.infoLog("id: " + imgID);
 
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inDither = false;// 不采用抖动解码()
-            options.inPreferredConfig = Bitmap.Config.RGB_565;
-            return MediaStore.Images.Thumbnails.getThumbnail(contentResolver, imgID, MediaStore.Images.Thumbnails.MINI_KIND, options);
+            // 获取图片 TODO
+            File file = new File(imgPath);
+            Uri uri = Uri.fromFile(file);
+            MainActivity.infoLog(imgPath + ": " + uri);
         } else {
             MainActivity.infoLog(imgPath + ": null");
         }
