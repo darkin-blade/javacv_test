@@ -19,8 +19,7 @@ import com.example.javacv.interfaces.NormalManager;
 
 import java.io.File;
 import java.util.ArrayList;
-
-import static org.bytedeco.opencv.global.opencv_imgcodecs.imread;
+import java.util.HashMap;
 
 public class SelectImg extends NormalManager {
     public String lastPath = null;// 路径记忆
@@ -36,8 +35,7 @@ public class SelectImg extends NormalManager {
     public int name_right = 80;
 
     public ArrayList<String> imgList;
-
-    public ManagerImg managerImg;// 图片处理类
+    public ArrayList<HashMap<ImageView, String>> imageViews;// 集中保存所有imageview及对应路径
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -53,13 +51,21 @@ public class SelectImg extends NormalManager {
             lastPath = MainActivity.appPath;
         }
         readPath(lastPath);
+        class LoadImg extends Thread {
+           @Override
+           public void run() {
+               for (int i = 0; i < imageViews.size(); i ++) {// 逐个异步加载图片
+                   ;
+               }
+           }
+        }
         return myView;
     }
 
     public void initData() {
         MainActivity.window_num = MainActivity.SELECT_IMG;
         imgList = new ArrayList<String>();
-        managerImg = new ManagerImg(getContext());// 图片处理类
+        imageViews = new ArrayList<HashMap<ImageView, String>>();
     }
 
     public void initButton() {
@@ -70,6 +76,7 @@ public class SelectImg extends NormalManager {
             @Override
             public void onClick(View v) {
                 imgList.clear();// 清空
+                imageViews.clear();
                 dismiss();
             }
         });
@@ -79,6 +86,7 @@ public class SelectImg extends NormalManager {
             public void onClick(View v) {// TODO 返回所有选中的图片路径
                 MainActivity.localRecognize.imgList.addAll(imgList);// TODO 合并
                 imgList.clear();// 清空
+                imageViews.clear();
                 dismiss();
             }
         });
@@ -108,11 +116,7 @@ public class SelectImg extends NormalManager {
                 if (items[i].isDirectory()) {
                     createItem(1, items[i].getName(), dirPath);
                 } else {// TODO 特判图片文件
-                    if (managerImg.isImg(dirPath + "/" + items[i].getName()) == true) {// TODO 测试是否为图片文件
-                        createItem(3, items[i].getName(), dirPath);
-                    } else {
-                        createItem(0, items[i].getName(), dirPath);
-                    }
+                    createItem(0, items[i].getName(), dirPath);
                 }
             }
         }
@@ -142,13 +146,11 @@ public class SelectImg extends NormalManager {
         icon.setLayoutParams(iconParam);
         if (itemType == 0) {// 文件
             icon.setBackgroundResource(R.drawable.item_file);
-        } else if (itemType == 3) {// TODO 显示图片缩略图
-            Bitmap bitmap = managerImg.LoadThumb(itemPath + "/" + itemName, 60, 60);// TODO 长宽
-//            Bitmap bitmap = BitmapFactory.decodeFile(itemPath + "/" + itemName);
-//            int width = 60;
-//            int height = bitmap.getHeight() * 60 / bitmap.getWidth();
-//            Bitmap thumbnail = Bitmap.createScaledBitmap(bitmap, width, height, true);// TODO 缩略图
-            icon.setImageBitmap(bitmap);
+
+            // TODO 记录所有需要加载的文件
+            HashMap<ImageView, String> hashMap = new HashMap<>();
+            hashMap.put(icon, itemPath + "/" + itemName);
+            imageViews.add(hashMap);
         } else {// 文件夹
             icon.setBackgroundResource(R.drawable.item_dir);
         }
@@ -172,13 +174,13 @@ public class SelectImg extends NormalManager {
         type.addView(icon);
         item.addView(type);
         detail.addView(name);
-        if (itemType == 3) {// 只有图片才有复选框
+        if (itemType == 0) {// TODO 只有图片才有复选框
             detail.addView(checkBox);
         }
         item.addView(detail);
 
         // 设置靠父元素左/右
-        if (itemType == 3) {
+        if (itemType == 0) {// TODO 只有图片才有复选框
             RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) checkBox.getLayoutParams();
             params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);// 单选框靠右
             checkBox.setLayoutParams(params);
@@ -199,7 +201,7 @@ public class SelectImg extends NormalManager {
                     readPath(itemPath + "/" + itemName);
                 }
             });
-        } else if (itemType == 3) {// TODO 图片的复选功能
+        } else if (itemType == 0) {// TODO 图片的复选功能
             item.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
