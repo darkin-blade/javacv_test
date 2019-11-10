@@ -2,6 +2,7 @@ package com.example.javacv.interfaces;
 
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,6 +12,8 @@ import android.provider.MediaStore.Images.*;
 
 import com.example.javacv.MainActivity;
 
+import java.io.File;
+
 public class ManagerImg {
     public Context context;
 
@@ -18,8 +21,11 @@ public class ManagerImg {
         this.context = context;
     }
 
-    public boolean isImg(String imgPath) {// 判断是否是图片
-        return true;// TODO
+    public boolean isImg(String imgPath) {// 判断是否是图片 TODO
+        Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        intent.setData(Uri.fromFile(new File(imgPath)));
+        context.sendBroadcast(intent);
+        return true;
     }
 
     public Bitmap LoadImg(String imgPath, int width, int height) {// 加载图片 TODO
