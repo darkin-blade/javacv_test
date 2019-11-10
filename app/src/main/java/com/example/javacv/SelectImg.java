@@ -56,34 +56,6 @@ public class SelectImg extends NormalManager {
         }
         readPath(lastPath);
 
-        // 异步加载图片
-//        class LoadImg extends Thread {
-//           @Override
-//           public void run() {
-//               for (int i = 0; i < imageViews.size(); i ++) {// 逐个异步加载图片
-//                   Bitmap bitmap = managerImg.LoadThumb(imgPaths.get(i), 30, 30);// TODO 大小
-//                   ImageView imageView = imageViews.get(i);
-//                   imageView.setImageBitmap(bitmap);
-//               }
-//           }
-//        }
-//        LoadImg loadImg = new LoadImg();
-//        loadImg.start();
-
-        class LoadImg extends AsyncTask<Void, Void, Void> {
-            @Override
-            protected Void doInBackground(Void... voids) {
-                for (int i = 0; i < imageViews.size(); i ++) {// 逐个异步加载图片
-                    Bitmap bitmap = managerImg.LoadThumb(imgPaths.get(i), 30, 30);// TODO 大小
-                    ImageView imageView = imageViews.get(i);
-                    imageView.setImageBitmap(bitmap);
-                }
-                return null;
-            }
-        }
-        LoadImg loadImg = new LoadImg();
-        loadImg.execute();
-
         return myView;
     }
 
@@ -103,7 +75,6 @@ public class SelectImg extends NormalManager {
             @Override
             public void onClick(View v) {
                 imgList.clear();// 清空
-                imageViews.clear();
                 dismiss();
             }
         });
@@ -113,13 +84,14 @@ public class SelectImg extends NormalManager {
             public void onClick(View v) {// TODO 返回所有选中的图片路径
                 MainActivity.localRecognize.imgList.addAll(imgList);// TODO 合并
                 imgList.clear();// 清空
-                imageViews.clear();
                 dismiss();
             }
         });
     }
 
     public void readPath(final String dirPath) {
+        imageViews.clear();// 清空
+        imgPaths.clear();
         lastPath = dirPath;// TODO 路径记忆
 
         // 特判根目录
@@ -150,6 +122,28 @@ public class SelectImg extends NormalManager {
 
         // 显示路径
         curPath.setText(dirPath);// TODO 简化路径
+
+        // TODO 异步加载图片
+
+        // 异步加载图片
+        class LoadImg extends Thread {
+           @Override
+           public void run() {
+               for (int i = 0; i < imageViews.size(); i ++) {// 逐个异步加载图片
+                   final Bitmap bitmap = managerImg.LoadThumb(imgPaths.get(i), 30, 30);// TODO 大小
+                   final ImageView imageView = imageViews.get(i);
+                   getActivity().runOnUiThread(new Runnable() {
+                       @Override
+                       public void run() {
+                           imageView.setImageBitmap(bitmap);
+                           imageView.setBackgroundResource(R.color.transparent);
+                       }
+                   });
+               }
+           }
+        }
+        LoadImg loadImg = new LoadImg();
+        loadImg.start();
     }
 
     public LinearLayout createItem(final int itemType, final String itemName, final String itemPath) {
