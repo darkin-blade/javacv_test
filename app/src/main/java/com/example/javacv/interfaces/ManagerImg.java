@@ -25,10 +25,13 @@ public class ManagerImg {
     public boolean isImg(String imgPath) {// 判断是否是图片 TODO
         Bitmap bitmap = null;
         BitmapFactory.Options options = new BitmapFactory.Options();
-//        options.inJustDecodeBounds = true;// TODO
+        options.inJustDecodeBounds = true;// TODO
         bitmap = BitmapFactory.decodeFile(imgPath, options);
-        // TODO
-        return true;
+        if (options.outHeight == 0 || options.outWidth == 0) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     public Bitmap LoadImg(String imgPath, int width, int height) {// 加载图片 TODO
@@ -36,38 +39,23 @@ public class ManagerImg {
     }
 
     public Bitmap LoadThumb(final String imgPath, final int width, final int height) {// 加载缩略图
-        class ImgAsync extends AsyncTask<Void, Void, Void> {
-            Bitmap bitmap = null;
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;// TODO 此时decode的bitmap为null
+        Bitmap bitmap = BitmapFactory.decodeFile(imgPath, options);
+        options.inJustDecodeBounds = false;// TODO
 
-            @Override
-            protected Void doInBackground(Void... voids) {
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inJustDecodeBounds = true;// TODO 此时decode的bitmap为null
-                bitmap = BitmapFactory.decodeFile(imgPath, options);
-                options.inJustDecodeBounds = false;// TODO
-
-                // 缩放
-                int h_rate = options.outHeight / height;
-                int w_rate = options.outWidth / width;
-                int rate = 1;
-                if (h_rate < w_rate) {
-                    rate = h_rate;
-                } else {
-                    rate = w_rate;
-                }
-                options.inSampleSize = rate;
-                bitmap = BitmapFactory.decodeFile(imgPath, options);
-
-                return null;
-            }
-
-            public Bitmap getBitmap() {
-                return bitmap;
-            }
+        // 缩放
+        int h_rate = options.outHeight / height;
+        int w_rate = options.outWidth / width;
+        int rate = 1;
+        if (h_rate < w_rate) {
+            rate = h_rate;
+        } else {
+            rate = w_rate;
         }
-        ImgAsync imgAsync = new ImgAsync();
-        imgAsync.execute();
-        MainActivity.infoLog("null: " + (imgAsync.getBitmap() == null));
-        return imgAsync.getBitmap();// TODO
+        options.inSampleSize = rate;
+        bitmap = BitmapFactory.decodeFile(imgPath, options);
+
+        return bitmap;// TODO
     }
 }

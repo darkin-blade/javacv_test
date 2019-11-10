@@ -2,6 +2,7 @@ package com.example.javacv;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,7 +36,10 @@ public class SelectImg extends NormalManager {
     public int name_right = 80;
 
     public ArrayList<String> imgList;
-    public ArrayList<HashMap<ImageView, String>> imageViews;// 集中保存所有imageview及对应路径
+    public ArrayList<ImageView> imageViews;// 集中保存所有imageview及对应路径
+    public ArrayList<String> imgPaths;
+
+    public ManagerImg managerImg;// 图片处理
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -51,21 +55,44 @@ public class SelectImg extends NormalManager {
             lastPath = MainActivity.appPath;
         }
         readPath(lastPath);
-        class LoadImg extends Thread {
-           @Override
-           public void run() {
-               for (int i = 0; i < imageViews.size(); i ++) {// 逐个异步加载图片
-                   ;
-               }
-           }
+
+        // 异步加载图片
+//        class LoadImg extends Thread {
+//           @Override
+//           public void run() {
+//               for (int i = 0; i < imageViews.size(); i ++) {// 逐个异步加载图片
+//                   Bitmap bitmap = managerImg.LoadThumb(imgPaths.get(i), 30, 30);// TODO 大小
+//                   ImageView imageView = imageViews.get(i);
+//                   imageView.setImageBitmap(bitmap);
+//               }
+//           }
+//        }
+//        LoadImg loadImg = new LoadImg();
+//        loadImg.start();
+
+        class LoadImg extends AsyncTask<Void, Void, Void> {
+            @Override
+            protected Void doInBackground(Void... voids) {
+                for (int i = 0; i < imageViews.size(); i ++) {// 逐个异步加载图片
+                    Bitmap bitmap = managerImg.LoadThumb(imgPaths.get(i), 30, 30);// TODO 大小
+                    ImageView imageView = imageViews.get(i);
+                    imageView.setImageBitmap(bitmap);
+                }
+                return null;
+            }
         }
+        LoadImg loadImg = new LoadImg();
+        loadImg.execute();
+
         return myView;
     }
 
     public void initData() {
         MainActivity.window_num = MainActivity.SELECT_IMG;
         imgList = new ArrayList<String>();
-        imageViews = new ArrayList<HashMap<ImageView, String>>();
+        imageViews = new ArrayList<ImageView>();
+        imgPaths = new ArrayList<String>();
+        managerImg = new ManagerImg(getContext());
     }
 
     public void initButton() {
@@ -148,9 +175,8 @@ public class SelectImg extends NormalManager {
             icon.setBackgroundResource(R.drawable.item_file);
 
             // TODO 记录所有需要加载的文件
-            HashMap<ImageView, String> hashMap = new HashMap<>();
-            hashMap.put(icon, itemPath + "/" + itemName);
-            imageViews.add(hashMap);
+            imageViews.add(icon);
+            imgPaths.add(itemPath + "/" + itemName);
         } else {// 文件夹
             icon.setBackgroundResource(R.drawable.item_dir);
         }
