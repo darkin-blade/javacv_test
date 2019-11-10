@@ -2,7 +2,6 @@ package com.example.javacv;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,7 +19,6 @@ import com.example.javacv.interfaces.NormalManager;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class SelectImg extends NormalManager {
     public String lastPath = null;// 路径记忆
@@ -36,7 +34,7 @@ public class SelectImg extends NormalManager {
     public int name_right = 80;
 
     public ArrayList<String> imgList;
-    public ArrayList<ImageView> imageViews;// 集中保存所有imageview及对应路径
+    public ArrayList<LinearLayout> imgLayouts;// 集中保存所有imageview及对应路径
     public ArrayList<String> imgPaths;
 
     public ManagerImg managerImg;// 图片处理
@@ -62,7 +60,7 @@ public class SelectImg extends NormalManager {
     public void initData() {
         MainActivity.window_num = MainActivity.SELECT_IMG;
         imgList = new ArrayList<String>();
-        imageViews = new ArrayList<ImageView>();
+        imgLayouts = new ArrayList<>();// TODO
         imgPaths = new ArrayList<String>();
         managerImg = new ManagerImg(getContext());
     }
@@ -90,7 +88,7 @@ public class SelectImg extends NormalManager {
     }
 
     public void readPath(final String dirPath) {
-        imageViews.clear();// 清空
+        imgLayouts.clear();// 清空
         imgPaths.clear();
         lastPath = dirPath;// TODO 路径记忆
 
@@ -123,27 +121,31 @@ public class SelectImg extends NormalManager {
         // 显示路径
         curPath.setText(dirPath);// TODO 简化路径
 
-        // TODO 异步加载图片
-
         // 异步加载图片
+        loadIcon();
+
+    }
+
+    public void loadIcon() {
         class LoadImg extends Thread {
-           @Override
-           public void run() {
-               for (int i = 0; i < imageViews.size(); i ++) {// 逐个异步加载图片
-                   final Bitmap bitmap = managerImg.LoadThumb(imgPaths.get(i), 60, 60);// TODO 大小
-                   if (bitmap == null) {// 不是图片 TODO
-                       ;
-                   }
-                   final ImageView imageView = imageViews.get(i);
-                   getActivity().runOnUiThread(new Runnable() {
-                       @Override
-                       public void run() {
-                           imageView.setImageBitmap(bitmap);
-                           imageView.setBackgroundResource(R.color.transparent);
-                       }
-                   });
-               }
-           }
+            @Override
+            public void run() {
+                for (int i = 0; i < imgLayouts.size(); i ++) {// 逐个异步加载图片
+                    final Bitmap bitmap = managerImg.LoadThumb(imgPaths.get(i), 60, 60);// TODO 大小
+                    if (bitmap == null) {// 不是图片 TODO
+                        ;
+                    }
+                    // 是图片 TODO 添加checkbox
+//                    final ImageView imageView = imgLayouts.get(i);
+//                    getActivity().runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            imageView.setImageBitmap(bitmap);
+//                            imageView.setBackgroundResource(R.color.transparent);
+//                        }
+//                    });
+                }
+            }
         }
         LoadImg loadImg = new LoadImg();
         loadImg.start();
@@ -172,8 +174,8 @@ public class SelectImg extends NormalManager {
             icon.setBackgroundResource(R.drawable.item_file);
 
             // TODO 记录所有需要加载的文件
-            imageViews.add(icon);
-            imgPaths.add(itemPath + "/" + itemName);
+            imgLayouts.add(layout);// 记录ui
+            imgPaths.add(itemPath + "/" + itemName);// 记录路径
         } else {// 文件夹
             icon.setBackgroundResource(R.drawable.item_dir);
         }
