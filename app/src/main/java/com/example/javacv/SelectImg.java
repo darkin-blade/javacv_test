@@ -131,12 +131,21 @@ public class SelectImg extends NormalManager {
             @Override
             public void run() {
                 for (int i = 0; i < imgLayouts.size(); i ++) {// 逐个异步加载图片
+                    // 生成缩略图
                     final Bitmap bitmap = managerImg.LoadThumb(imgPaths.get(i), 60, 60);// TODO 大小
                     if (bitmap == null) {// 不是图片 TODO
                         continue;
                     }
 
-                    // 是图片 TODO 添加checkbox
+                    // 是图片
+
+                    // TODO 加载过慢导致数组越界
+                    MainActivity.infoLog(i + "/" + imgLayouts.size());
+                    if (i >= imgLayouts.size()) {
+                        MainActivity.infoLog("before");
+                        break;
+                    }
+
                     final LinearLayout item = imgLayouts.get(i);
                     LinearLayout type = (LinearLayout) item.getChildAt(0);
                     final RelativeLayout detail = (RelativeLayout) item.getChildAt(1);
