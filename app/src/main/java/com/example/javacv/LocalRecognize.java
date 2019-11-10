@@ -232,7 +232,12 @@ public class LocalRecognize extends DialogFragment {
                         }
                     });
                 } else {
-                    MainActivity.infoToast(getContext(), "failed");
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            MainActivity.infoToast(getContext(), "failed");
+                        }
+                    });
                 }
             }
         }

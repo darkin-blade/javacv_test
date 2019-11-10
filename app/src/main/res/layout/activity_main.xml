@@ -29,6 +29,7 @@
             android:text="Take Pictures">
         </Button>
         <Button
+            android:id="@+id/test"
             style="@style/item_3"
             android:text="TODO">
         </Button>

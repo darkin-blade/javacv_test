@@ -19,6 +19,8 @@ import android.os.AsyncTask;
 import org.bytedeco.javacpp.Loader;
 import org.bytedeco.opencv.opencv_java;
 
+import java.io.IOException;
+
 public class MainActivity extends AppCompatActivity implements DialogInterface.OnDismissListener {
     static public int window_num;
     static public String appPath = null;// app路径
@@ -61,6 +63,16 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
             @Override
             protected Void doInBackground(Void... voids) {
                 Loader.load(opencv_java.class);// openCV初始化,不能直接放在class开头
+                MainActivity.this.runOnUiThread(new Runnable() {// 输出版本
+                    @Override
+                    public void run() {
+                        try {
+                            infoToast(MainActivity.this, "opencv: " + Loader.getVersion() + ", " + Loader.getPlatform());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
                 return null;
             }
         }
