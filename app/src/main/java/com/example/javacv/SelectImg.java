@@ -133,17 +133,67 @@ public class SelectImg extends NormalManager {
                 for (int i = 0; i < imgLayouts.size(); i ++) {// 逐个异步加载图片
                     final Bitmap bitmap = managerImg.LoadThumb(imgPaths.get(i), 60, 60);// TODO 大小
                     if (bitmap == null) {// 不是图片 TODO
-                        ;
+                        continue;
                     }
+
                     // 是图片 TODO 添加checkbox
-//                    final ImageView imageView = imgLayouts.get(i);
-//                    getActivity().runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            imageView.setImageBitmap(bitmap);
-//                            imageView.setBackgroundResource(R.color.transparent);
-//                        }
-//                    });
+                    final LinearLayout item = imgLayouts.get(i);
+                    LinearLayout type = (LinearLayout) item.getChildAt(0);
+                    final RelativeLayout detail = (RelativeLayout) item.getChildAt(1);
+                    final ImageView icon = (ImageView) type.getChildAt(0);
+                    LinearLayout.LayoutParams boxParam = new LinearLayout.LayoutParams(box_width, box_width);
+
+                    final CheckBox checkBox = new CheckBox(getContext());
+                    boxParam.setMargins(box_right, box_top, box_right, box_top);
+                    checkBox.setLayoutParams(boxParam);
+                    checkBox.setButtonDrawable(R.drawable.checkbox_library);
+
+                    final int finalI = i;// TODO
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            // 动态生成缩略图
+                            icon.setImageBitmap(bitmap);
+                            icon.setBackgroundResource(R.color.transparent);
+
+                            // TODO 图片的复选功能
+                            // 点击外部
+                            item.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    if (checkBox.isChecked()) {// 直接调用checkbox的监听,不需重复操作
+                                        item.setBackgroundResource(R.color.grey);
+                                        checkBox.setChecked(false);
+                                    } else {
+                                        item.setBackgroundResource(R.color.grey_light);
+                                        checkBox.setChecked(true);
+                                    }
+                                }
+                            });
+
+                            // 直接点击复选框
+                            checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                                @Override
+                                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                                    if (checkBox.isChecked()) {
+                                        item.setBackgroundResource(R.color.grey_light);
+                                        imgList.add(imgPaths.get(finalI));// TODO 添加到list
+                                        MainActivity.infoLog("size: " + imgList.size());
+                                    } else {
+                                        item.setBackgroundResource(R.color.grey);
+                                        boolean result = imgList.remove(imgPaths.get(finalI));// TODO 从list移出
+                                        MainActivity.infoLog("size: " + imgList.size() + ", " + result);
+                                    }
+                                }
+                            });
+
+                            // 动态添加checkbox
+                            detail.addView(checkBox);
+                            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) checkBox.getLayoutParams();
+                            params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);// 单选框靠右
+                            checkBox.setLayoutParams(params);
+                        }
+                    });
                 }
             }
         }
@@ -157,7 +207,6 @@ public class SelectImg extends NormalManager {
         LinearLayout.LayoutParams typeParam = new LinearLayout.LayoutParams(icon_height, icon_height);
         LinearLayout.LayoutParams iconParam = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         LinearLayout.LayoutParams detailParam = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-        LinearLayout.LayoutParams boxParam = new LinearLayout.LayoutParams(box_width, box_width);
         LinearLayout.LayoutParams nameParam = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
 
         final LinearLayout item = new LinearLayout(getContext());// TODO 参数
@@ -174,7 +223,7 @@ public class SelectImg extends NormalManager {
             icon.setBackgroundResource(R.drawable.item_file);
 
             // TODO 记录所有需要加载的文件
-            imgLayouts.add(layout);// 记录ui
+            imgLayouts.add(item);// 记录ui
             imgPaths.add(itemPath + "/" + itemName);// 记录路径
         } else {// 文件夹
             icon.setBackgroundResource(R.drawable.item_dir);
@@ -182,11 +231,6 @@ public class SelectImg extends NormalManager {
 
         RelativeLayout detail = new RelativeLayout(getContext());
         detail.setLayoutParams(detailParam);
-
-        final CheckBox checkBox = new CheckBox(getContext());
-        boxParam.setMargins(box_right, box_top, box_right, box_top);
-        checkBox.setLayoutParams(boxParam);
-        checkBox.setButtonDrawable(R.drawable.checkbox_library);
 
         TextView name = new TextView(getContext());// 文件名
         nameParam.setMargins(0, name_top, name_right, name_top);
@@ -226,35 +270,7 @@ public class SelectImg extends NormalManager {
                     readPath(itemPath + "/" + itemName);
                 }
             });
-        } else if (itemType == 0) {// TODO 图片的复选功能
-            item.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (checkBox.isChecked()) {// 直接调用checkbox的监听,不需重复操作
-                        item.setBackgroundResource(R.color.grey);
-                        checkBox.setChecked(false);
-                    } else {
-                        item.setBackgroundResource(R.color.grey_light);
-                        checkBox.setChecked(true);
-                    }
-                }
-            });
         }
-
-        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (checkBox.isChecked()) {
-                    item.setBackgroundResource(R.color.grey_light);
-                    imgList.add(itemPath + "/" + itemName);// TODO 添加到list
-                    MainActivity.infoLog("size: " + imgList.size());
-                } else {
-                    item.setBackgroundResource(R.color.grey);
-                    boolean result = imgList.remove(itemPath + "/" + itemName);// TODO 从list移出
-                    MainActivity.infoLog("size: " + imgList.size() + ", " + result);
-                }
-            }
-        });
 
         layout.addView(item);
 
