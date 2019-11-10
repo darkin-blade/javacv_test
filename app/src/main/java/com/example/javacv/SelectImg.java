@@ -1,7 +1,6 @@
 package com.example.javacv;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -144,7 +143,7 @@ public class SelectImg extends NormalManager {
         if (itemType == 0) {// 文件
             icon.setBackgroundResource(R.drawable.item_file);
         } else if (itemType == 3) {// TODO 显示图片缩略图
-            Bitmap bitmap = managerImg.ThumbImg(itemPath + "/" + itemName, 60, 60);// TODO 长宽
+            Bitmap bitmap = managerImg.LoadThumb(itemPath + "/" + itemName, 60, 60);// TODO 长宽
 //            Bitmap bitmap = BitmapFactory.decodeFile(itemPath + "/" + itemName);
 //            int width = 60;
 //            int height = bitmap.getHeight() * 60 / bitmap.getWidth();

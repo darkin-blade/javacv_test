@@ -14,7 +14,10 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.javacv.interfaces.MenuAsync;
+import android.os.AsyncTask;
+
+import org.bytedeco.javacpp.Loader;
+import org.bytedeco.opencv.opencv_java;
 
 public class MainActivity extends AppCompatActivity implements DialogInterface.OnDismissListener {
     static public int window_num;
@@ -29,7 +32,6 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
 
     static LocalRecognize localRecognize;// 本地选取
     static TakePicutures takePicutures;// 拍照获取
-    static MenuAsync menuAsync;// TODO 异步加载菜单
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,11 +57,18 @@ public class MainActivity extends AppCompatActivity implements DialogInterface.O
         appPath = getExternalFilesDir("").getAbsolutePath();
 
         // 初始化异步加载
-        menuAsync = new MenuAsync();
+        class MenuAsync extends AsyncTask<Void, Void, Void> {// 异步加载主菜单
+            @Override
+            protected Void doInBackground(Void... voids) {
+                Loader.load(opencv_java.class);// openCV初始化,不能直接放在class开头
+                return null;
+            }
+        }
+        MenuAsync menuAsync = new MenuAsync();
         menuAsync.execute();// TODO
-        infoToast(this, appPath);
 
         // 初始化窗口
+        infoToast(this, appPath);
         localRecognize = new LocalRecognize();
         takePicutures = new TakePicutures();
     }

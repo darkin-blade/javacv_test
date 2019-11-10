@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Images.*;
 
@@ -22,9 +23,11 @@ public class ManagerImg {
     }
 
     public boolean isImg(String imgPath) {// 判断是否是图片 TODO
-        Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        intent.setData(Uri.fromFile(new File(imgPath)));
-        context.sendBroadcast(intent);
+        Bitmap bitmap = null;
+        BitmapFactory.Options options = new BitmapFactory.Options();
+//        options.inJustDecodeBounds = true;// TODO
+        bitmap = BitmapFactory.decodeFile(imgPath, options);
+        // TODO
         return true;
     }
 
@@ -32,51 +35,39 @@ public class ManagerImg {
         return null;
     }
 
-    public Bitmap ThumbImg(String imgPath, int width, int height) {// 转换成缩略图
-        // 查询缩略图表单
-        Uri uri = Media.EXTERNAL_CONTENT_URI;
-        String[] projection = {
-                Media._ID,
-                Media.DATA
-        };
-//        String selection = null;
-        String selection = Media.DATA + " = '" + imgPath + "'";// 相当于数据库的where
-        String[] selectionArgs = null;
-        String sortOrder = null;
+    public Bitmap LoadThumb(final String imgPath, final int width, final int height) {// 加载缩略图
+        class ImgAsync extends AsyncTask<Void, Void, Void> {
+            Bitmap bitmap = null;
 
-        ContentResolver contentResolver = context.getContentResolver();
-        Cursor cursor = contentResolver.query(// TODO
-                uri,
-                projection,
-                selection,
-                selectionArgs,
-                sortOrder
-        );
+            @Override
+            protected Void doInBackground(Void... voids) {
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inJustDecodeBounds = true;// TODO 此时decode的bitmap为null
+                bitmap = BitmapFactory.decodeFile(imgPath, options);
+                options.inJustDecodeBounds = false;// TODO
 
-        if (cursor == null || cursor.getCount() == 0) {// 没有结果
-            MainActivity.infoLog(imgPath + ": null");
-            return null;
+                // 缩放
+                int h_rate = options.outHeight / height;
+                int w_rate = options.outWidth / width;
+                int rate = 1;
+                if (h_rate < w_rate) {
+                    rate = h_rate;
+                } else {
+                    rate = w_rate;
+                }
+                options.inSampleSize = rate;
+                bitmap = BitmapFactory.decodeFile(imgPath, options);
+
+                return null;
+            }
+
+            public Bitmap getBitmap() {
+                return bitmap;
+            }
         }
-
-        // 有查询结果
-        if (cursor.moveToFirst()) {// TODO
-            int img_id = cursor.getInt(0);
-//            do {
-//                MainActivity.infoLog(cursor.getString(1));
-//            } while (cursor.moveToNext());
-            MainActivity.infoLog("count: " + cursor.getCount());
-            cursor.close();
-
-            // 返回缩略图
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inDither = false;
-            options.inPreferredConfig = Bitmap.Config.RGB_565;
-            Bitmap bitmap = Thumbnails.getThumbnail(contentResolver, img_id, MediaStore.Video.Thumbnails.MINI_KIND, options);
-            MainActivity.infoLog("null: " + (bitmap == null));
-            return bitmap;
-        } else {
-            MainActivity.infoLog(imgPath + ": null");
-        }
-        return null;// TODO
+        ImgAsync imgAsync = new ImgAsync();
+        imgAsync.execute();
+        MainActivity.infoLog("null: " + (imgAsync.getBitmap() == null));
+        return imgAsync.getBitmap();// TODO
     }
 }
