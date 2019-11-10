@@ -126,7 +126,7 @@ public class SelectImg extends NormalManager {
 
     }
 
-    public void loadIcon() {
+    public void loadIcon() {// 动态加载文件项目
         class LoadImg extends Thread {
             @Override
             public void run() {

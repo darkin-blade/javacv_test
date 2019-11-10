@@ -178,52 +178,66 @@ public class LocalRecognize extends DialogFragment {
     }
 
     public void combineImg() {// 合并图片 TODO 以缩略图的方式显示
-        LinearLayout.LayoutParams frameParam = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, img_height);
-        LinearLayout.LayoutParams imgParam = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        final LinearLayout.LayoutParams frameParam = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, img_height);
+        final LinearLayout.LayoutParams imgParam = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         imgParam.setMargins(img_margin, img_margin, img_margin, img_margin);
 
         // 读取图片
-        MatVector imgVector = new MatVector();
+        final MatVector imgVector = new MatVector();
         org.bytedeco.opencv.opencv_core.Mat mat;
         for (int i = 0; i < imgList.size(); i ++) {
             mat = imread(imgList.get(i));
             imgVector.push_back(mat);
         }
 
-        // 合并
-        Stitcher stitcher = Stitcher.create();
-        org.bytedeco.opencv.opencv_core.Mat combined = new org.bytedeco.opencv.opencv_core.Mat();
-        int result = stitcher.stitch(imgVector, combined);// 合并
-        MainActivity.infoLog(combined.arrayWidth() + " " + combined.arrayHeight());
+        class AsyncCombine extends Thread {
+            @Override
+            public void run() {
+                // 合并
+                Stitcher stitcher = Stitcher.create();
+                final org.bytedeco.opencv.opencv_core.Mat combined = new org.bytedeco.opencv.opencv_core.Mat();
+                int result = stitcher.stitch(imgVector, combined);// 合并
+                MainActivity.infoLog(combined.arrayWidth() + " " + combined.arrayHeight());
 
-        // 显示合并的图片 TODO
-        if (result == 0) {// 如果成功
-            // 颜色转换
-            Mat matBGR = new Mat(combined.address());
-            Mat matRGB = new Mat();
-            Imgproc.cvtColor(matBGR, matRGB, Imgproc.COLOR_BGR2RGB);// 将opencv默认的BGR转成RGB
-            ImageView imageView = new ImageView(getContext());// TODO 合并之后的图片显示的位置
-            imageView.setLayoutParams(imgParam);
-            combinedImg = Bitmap.createBitmap(combined.arrayWidth(), combined.arrayHeight(), Bitmap.Config.RGB_565);
-            Utils.matToBitmap(matRGB, combinedImg);
-            imageView.setImageBitmap(combinedImg);
+                // 显示合并的图片 TODO
+                if (result == 0) {// 如果成功
+                    // 颜色转换
+                    Mat matBGR = new Mat(combined.address());
+                    final Mat matRGB = new Mat();
+                    Imgproc.cvtColor(matBGR, matRGB, Imgproc.COLOR_BGR2RGB);// 将opencv默认的BGR转成RGB
+                    final ImageView imageView = new ImageView(getContext());// TODO 合并之后的图片显示的位置
 
-            // `保存`功能
-            saveImg.combinedImg = combinedImg;
-            imageView.setOnClickListener(new View.OnClickListener() {// 保存图片
-                @Override
-                public void onClick(View v) {// TODO 点击保存
-                    saveImg.show(fragmentManager, "save");
+                    // 修改ui TODO
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            imageView.setLayoutParams(imgParam);
+                            combinedImg = Bitmap.createBitmap(combined.arrayWidth(), combined.arrayHeight(), Bitmap.Config.RGB_565);
+                            Utils.matToBitmap(matRGB, combinedImg);
+                            imageView.setImageBitmap(combinedImg);
+
+                            // `保存`功能
+                            saveImg.combinedImg = combinedImg;
+                            imageView.setOnClickListener(new View.OnClickListener() {// 保存图片
+                                @Override
+                                public void onClick(View v) {// TODO 点击保存
+                                    saveImg.show(fragmentManager, "save");
+                                }
+                            });
+
+                            LinearLayout imageFrame = new LinearLayout(getContext());
+                            imageFrame.setLayoutParams(frameParam);
+                            imageFrame.addView(imageView);
+                            imgLayout.addView(imageFrame);
+                        }
+                    });
+                } else {
+                    MainActivity.infoToast(getContext(), "failed");
                 }
-            });
-
-            LinearLayout imageFrame = new LinearLayout(getContext());
-            imageFrame.setLayoutParams(frameParam);
-            imageFrame.addView(imageView);
-            imgLayout.addView(imageFrame);
-        } else {
-            MainActivity.infoToast(getContext(), "failed");
+            }
         }
+        AsyncCombine asyncCombine = new AsyncCombine();
+        asyncCombine.start();
     }
 
 }
