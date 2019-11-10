@@ -130,7 +130,10 @@ public class SelectImg extends NormalManager {
            @Override
            public void run() {
                for (int i = 0; i < imageViews.size(); i ++) {// 逐个异步加载图片
-                   final Bitmap bitmap = managerImg.LoadThumb(imgPaths.get(i), 30, 30);// TODO 大小
+                   final Bitmap bitmap = managerImg.LoadThumb(imgPaths.get(i), 60, 60);// TODO 大小
+                   if (bitmap == null) {// 不是图片 TODO
+                       ;
+                   }
                    final ImageView imageView = imageViews.get(i);
                    getActivity().runOnUiThread(new Runnable() {
                        @Override

@@ -39,6 +39,10 @@ public class ManagerImg {
     }
 
     public Bitmap LoadThumb(final String imgPath, final int width, final int height) {// 加载缩略图
+        if (isImg(imgPath) == false) {
+            return null;
+        }
+
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;// TODO 此时decode的bitmap为null
         Bitmap bitmap = BitmapFactory.decodeFile(imgPath, options);
