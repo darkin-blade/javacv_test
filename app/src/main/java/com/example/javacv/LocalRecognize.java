@@ -15,10 +15,12 @@ import android.widget.LinearLayout;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 
+import org.bytedeco.opencv.opencv_core.KeyPointVector;
 import org.bytedeco.opencv.opencv_core.MatVector;
 import org.bytedeco.opencv.opencv_stitching.Stitcher;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
+import org.opencv.features2d.FastFeatureDetector;
 import org.opencv.imgproc.Imgproc;
 
 import java.util.ArrayList;
@@ -96,8 +98,8 @@ public class LocalRecognize extends DialogFragment {
         btnWork.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                 combineImg();
-//                findFestures();// TODO
+//                 combineImg();
+                findFestures();// TODO
             }
         });
 
@@ -174,22 +176,25 @@ public class LocalRecognize extends DialogFragment {
         class AsyncFind extends Thread {
             @Override
             public void run() {// 读取图片
-                MatVector imgVector = new MatVector();
-                org.bytedeco.opencv.opencv_core.Mat mat;
-                for (int i = 0; i < imgList.size(); i ++) {
-                    mat = imread(imgList.get(i));
-                    imgVector.push_back(mat);
+                String tmp = null;
+                if (tmp.length() == 0) return;// TODO 必报错
+
+                if (imgList.size() <= 0) {
+                    MainActivity.infoLog("no imgs");
+                    return;// TODO 报错
                 }
 
-                // 合并
-                Stitcher stitcher = Stitcher.create();
-                org.bytedeco.opencv.opencv_core.Mat combined = new org.bytedeco.opencv.opencv_core.Mat();
-                int result = stitcher.stitch(imgVector, combined);// 合并
-                MainActivity.infoLog(combined.arrayWidth() + " " + combined.arrayHeight());
+                org.bytedeco.opencv.opencv_core.Mat mat = imread(imgList.get(0));// 获取第一张图片
+                KeyPointVector keyPoints = new KeyPointVector();
+                FastFeatureDetector fastFeatureDetector = FastFeatureDetector.__fromPtr__(20);// TODO 值
+
+                org.bytedeco.opencv.opencv_core.Mat imgKeyPoints = null;
+
+                int status = 0;
 
                 // 显示合并的图片 TODO
-                if (result == 0) {// 如果成功
-                    showResult(combined);// TODO 显示结果并提供`保存`功能
+                if (status == 0) {// 如果成功
+                    showResult(imgKeyPoints);// TODO 显示结果并提供`保存`功能
                 } else {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
@@ -218,11 +223,11 @@ public class LocalRecognize extends DialogFragment {
                 // 合并
                 Stitcher stitcher = Stitcher.create();
                 org.bytedeco.opencv.opencv_core.Mat combined = new org.bytedeco.opencv.opencv_core.Mat();
-                int result = stitcher.stitch(imgVector, combined);// 合并
+                int status = stitcher.stitch(imgVector, combined);// 合并
                 MainActivity.infoLog(combined.arrayWidth() + " " + combined.arrayHeight());
 
                 // 显示合并的图片 TODO
-                if (result == 0) {// 如果成功
+                if (status == 0) {// 如果成功
                     showResult(combined);// TODO 显示结果并提供`保存`功能
                 } else {
                     getActivity().runOnUiThread(new Runnable() {
@@ -239,7 +244,7 @@ public class LocalRecognize extends DialogFragment {
     }
 
     public void showResult(org.bytedeco.opencv.opencv_core.Mat result) {
-        final Bitmap resultImg = Bitmap.createBitmap(result.arrayWidth(), result.arrayHeight(), Bitmap.Config.RGB_565);
+        final Bitmap resultImg = Bitmap.createBitmap(result.arrayWidth(), result.arrayHeight(), Bitmap.Config.RGB_565);// 存放图片结果
 
         // 颜色转换
         Mat matBGR = new Mat(result.address());// 强制转换mat
