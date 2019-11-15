@@ -243,12 +243,7 @@ public class LocalRecognize extends DialogFragment {
     public void combineImg() {// 合并图片 TODO 以缩略图的方式显示
         class AsyncCombine extends Thread {
             @Override
-            public void run() {
-                final LinearLayout.LayoutParams frameParam = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, img_height);
-                final LinearLayout.LayoutParams imgParam = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-                imgParam.setMargins(img_margin, img_margin, img_margin, img_margin);
-
-                // 读取图片
+            public void run() {// 读取图片
                 final MatVector imgVector = new MatVector();
                 org.bytedeco.opencv.opencv_core.Mat mat;
                 for (int i = 0; i < imgList.size(); i ++) {
@@ -268,15 +263,21 @@ public class LocalRecognize extends DialogFragment {
                     Mat matBGR = new Mat(combined.address());
                     final Mat matRGB = new Mat();
                     Imgproc.cvtColor(matBGR, matRGB, Imgproc.COLOR_BGR2RGB);// 将opencv默认的BGR转成RGB
-                    final ImageView imageView = new ImageView(getContext());// TODO 合并之后的图片显示的位置
+                    combinedImg = Bitmap.createBitmap(combined.arrayWidth(), combined.arrayHeight(), Bitmap.Config.RGB_565);
+                    Utils.matToBitmap(matRGB, combinedImg);
 
                     // 修改ui TODO
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            // 创建layout参数
+                            LinearLayout.LayoutParams frameParam = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, img_height);
+                            LinearLayout.LayoutParams imgParam = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+                            imgParam.setMargins(img_margin, img_margin, img_margin, img_margin);
+
+                            // 显示`结果`图片
+                            ImageView imageView = new ImageView(getContext());// TODO 合并之后的图片显示的位置
                             imageView.setLayoutParams(imgParam);
-                            combinedImg = Bitmap.createBitmap(combined.arrayWidth(), combined.arrayHeight(), Bitmap.Config.RGB_565);
-                            Utils.matToBitmap(matRGB, combinedImg);
                             imageView.setImageBitmap(combinedImg);
 
                             // `保存`功能
@@ -306,6 +307,10 @@ public class LocalRecognize extends DialogFragment {
         }
         AsyncCombine asyncCombine = new AsyncCombine();
         asyncCombine.start();
+    }
+
+    public void showResult() {
+        ;
     }
 
 }
