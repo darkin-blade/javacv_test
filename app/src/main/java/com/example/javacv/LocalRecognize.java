@@ -15,9 +15,7 @@ import android.widget.LinearLayout;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 
-import org.bytedeco.opencv.opencv_core.KeyPointVector;
 import org.bytedeco.opencv.opencv_core.MatVector;
-import org.bytedeco.opencv.opencv_features2d.Feature2D;
 import org.bytedeco.opencv.opencv_stitching.Stitcher;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
@@ -35,8 +33,6 @@ public class LocalRecognize extends DialogFragment {
 
     public SelectImg selectImg;// 选取图片
     public SaveImg saveImg;
-
-    public Bitmap resultImg;// 合并后的图片
 
     public Button btnAdd;// 添加本地图片
     public Button btnDel;// 删除添加的图片
@@ -79,7 +75,6 @@ public class LocalRecognize extends DialogFragment {
     public void initData() {// TODO
         imgList = new ArrayList<String>();
         delList = new ArrayList<String>();
-        resultImg = null;// TODO 初始化为空
         imgLayout = myView.findViewById(R.id.img_list);
         selectImg = new SelectImg();// 初始化文件浏览器
         saveImg = new SaveImg();// 初始化文件管理器
@@ -94,7 +89,6 @@ public class LocalRecognize extends DialogFragment {
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                resultImg = null;// 清除结果
                 selectImg.show(fragmentManager, "save");
             }
         });
@@ -110,7 +104,6 @@ public class LocalRecognize extends DialogFragment {
         btnDel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                resultImg = null;// 清除结果
                 for (int i = 0; i < delList.size(); i ++) {
                     imgList.remove(delList.get(i));
                 }
@@ -122,7 +115,6 @@ public class LocalRecognize extends DialogFragment {
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                resultImg = null;// 清除结果
                 dismiss();
             }
         });
@@ -179,71 +171,10 @@ public class LocalRecognize extends DialogFragment {
     }
 
     public void findFestures() {// TODO 还在测试
-        final LinearLayout.LayoutParams frameParam = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, img_height);
-        final LinearLayout.LayoutParams imgParam = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-        imgParam.setMargins(img_margin, img_margin, img_margin, img_margin);
-
-        // 读取图片
-        final MatVector imgVector = new MatVector();
-        org.bytedeco.opencv.opencv_core.Mat mat;
-        for (int i = 0; i < imgList.size(); i ++) {
-            mat = imread(imgList.get(i));
-            imgVector.push_back(mat);
-        }
-
-        class AsyncCombine extends Thread {
-            @Override
-            public void run() {
-                // 合并
-                Stitcher stitcher = Stitcher.create();
-                Feature2D feature2D = stitcher.featuresFinder();
-                KeyPointVector keyPoints = new KeyPointVector();
-
-                // 存放结果
-                final org.bytedeco.opencv.opencv_core.Mat result = null;
-                if (result == null) MainActivity.infoLog(result.toString());// TODO 该结果不能为空
-
-                // 颜色转换
-                Mat matBGR = new Mat(result.address());
-                final Mat matRGB = new Mat();
-                Imgproc.cvtColor(matBGR, matRGB, Imgproc.COLOR_BGR2RGB);// 将opencv默认的BGR转成RGB
-                final ImageView imageView = new ImageView(getContext());// TODO 合并之后的图片显示的位置
-
-                // 修改ui TODO
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        imageView.setLayoutParams(imgParam);
-                        resultImg = Bitmap.createBitmap(result.arrayWidth(), result.arrayHeight(), Bitmap.Config.RGB_565);
-                        Utils.matToBitmap(matRGB, resultImg);
-                        imageView.setImageBitmap(resultImg);
-
-                        // `保存`功能
-                        saveImg.resultImg = resultImg;
-                        imageView.setOnClickListener(new View.OnClickListener() {// 保存图片
-                            @Override
-                            public void onClick(View v) {// TODO 点击保存
-                                saveImg.show(fragmentManager, "save");
-                            }
-                        });
-
-                        LinearLayout imageFrame = new LinearLayout(getContext());
-                        imageFrame.setLayoutParams(frameParam);
-                        imageFrame.addView(imageView);
-                        imgLayout.addView(imageFrame);
-                    }
-                });
-            }
-        }
-        AsyncCombine asyncCombine = new AsyncCombine();
-        asyncCombine.start();
-    }
-
-    public void combineImg() {// 合并图片 TODO 以缩略图的方式显示
-        class AsyncCombine extends Thread {
+        class AsyncFind extends Thread {
             @Override
             public void run() {// 读取图片
-                final MatVector imgVector = new MatVector();
+                MatVector imgVector = new MatVector();
                 org.bytedeco.opencv.opencv_core.Mat mat;
                 for (int i = 0; i < imgList.size(); i ++) {
                     mat = imread(imgList.get(i));
@@ -252,7 +183,41 @@ public class LocalRecognize extends DialogFragment {
 
                 // 合并
                 Stitcher stitcher = Stitcher.create();
-                final org.bytedeco.opencv.opencv_core.Mat combined = new org.bytedeco.opencv.opencv_core.Mat();
+                org.bytedeco.opencv.opencv_core.Mat combined = new org.bytedeco.opencv.opencv_core.Mat();
+                int result = stitcher.stitch(imgVector, combined);// 合并
+                MainActivity.infoLog(combined.arrayWidth() + " " + combined.arrayHeight());
+
+                // 显示合并的图片 TODO
+                if (result == 0) {// 如果成功
+                    showResult(combined);// TODO 显示结果并提供`保存`功能
+                } else {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            MainActivity.infoToast(getContext(), "failed");
+                        }
+                    });
+                }
+            }
+        }
+        AsyncFind asyncFind = new AsyncFind();
+        asyncFind.start();
+    }
+
+    public void combineImg() {// 合并图片 TODO 以缩略图的方式显示
+        class AsyncCombine extends Thread {
+            @Override
+            public void run() {// 读取图片
+                MatVector imgVector = new MatVector();
+                org.bytedeco.opencv.opencv_core.Mat mat;
+                for (int i = 0; i < imgList.size(); i ++) {
+                    mat = imread(imgList.get(i));
+                    imgVector.push_back(mat);
+                }
+
+                // 合并
+                Stitcher stitcher = Stitcher.create();
+                org.bytedeco.opencv.opencv_core.Mat combined = new org.bytedeco.opencv.opencv_core.Mat();
                 int result = stitcher.stitch(imgVector, combined);// 合并
                 MainActivity.infoLog(combined.arrayWidth() + " " + combined.arrayHeight());
 
@@ -274,11 +239,12 @@ public class LocalRecognize extends DialogFragment {
     }
 
     public void showResult(org.bytedeco.opencv.opencv_core.Mat result) {
+        final Bitmap resultImg = Bitmap.createBitmap(result.arrayWidth(), result.arrayHeight(), Bitmap.Config.RGB_565);
+
         // 颜色转换
         Mat matBGR = new Mat(result.address());// 强制转换mat
         Mat matRGB = new Mat();// 颜色正确的mat
         Imgproc.cvtColor(matBGR, matRGB, Imgproc.COLOR_BGR2RGB);// 将opencv默认的BGR转成RGB
-        resultImg = Bitmap.createBitmap(result.arrayWidth(), result.arrayHeight(), Bitmap.Config.RGB_565);
         Utils.matToBitmap(matRGB, resultImg);
 
         // 修改ui TODO
