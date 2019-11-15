@@ -19,7 +19,6 @@ import org.bytedeco.opencv.opencv_core.KeyPointVector;
 import org.bytedeco.opencv.opencv_core.MatVector;
 import org.bytedeco.opencv.opencv_features2d.Feature2D;
 import org.bytedeco.opencv.opencv_stitching.Stitcher;
-import org.bytedeco.opencv.presets.opencv_core;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
@@ -37,7 +36,7 @@ public class LocalRecognize extends DialogFragment {
     public SelectImg selectImg;// 选取图片
     public SaveImg saveImg;
 
-    public Bitmap combinedImg;// 合并后的图片
+    public Bitmap resultImg;// 合并后的图片
 
     public Button btnAdd;// 添加本地图片
     public Button btnDel;// 删除添加的图片
@@ -80,7 +79,7 @@ public class LocalRecognize extends DialogFragment {
     public void initData() {// TODO
         imgList = new ArrayList<String>();
         delList = new ArrayList<String>();
-        combinedImg = null;// TODO 初始化为空
+        resultImg = null;// TODO 初始化为空
         imgLayout = myView.findViewById(R.id.img_list);
         selectImg = new SelectImg();// 初始化文件浏览器
         saveImg = new SaveImg();// 初始化文件管理器
@@ -95,7 +94,7 @@ public class LocalRecognize extends DialogFragment {
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                combinedImg = null;// 清除结果
+                resultImg = null;// 清除结果
                 selectImg.show(fragmentManager, "save");
             }
         });
@@ -111,7 +110,7 @@ public class LocalRecognize extends DialogFragment {
         btnDel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                combinedImg = null;// 清除结果
+                resultImg = null;// 清除结果
                 for (int i = 0; i < delList.size(); i ++) {
                     imgList.remove(delList.get(i));
                 }
@@ -123,7 +122,7 @@ public class LocalRecognize extends DialogFragment {
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                combinedImg = null;// 清除结果
+                resultImg = null;// 清除结果
                 dismiss();
             }
         });
@@ -215,12 +214,12 @@ public class LocalRecognize extends DialogFragment {
                     @Override
                     public void run() {
                         imageView.setLayoutParams(imgParam);
-                        combinedImg = Bitmap.createBitmap(result.arrayWidth(), result.arrayHeight(), Bitmap.Config.RGB_565);
-                        Utils.matToBitmap(matRGB, combinedImg);
-                        imageView.setImageBitmap(combinedImg);
+                        resultImg = Bitmap.createBitmap(result.arrayWidth(), result.arrayHeight(), Bitmap.Config.RGB_565);
+                        Utils.matToBitmap(matRGB, resultImg);
+                        imageView.setImageBitmap(resultImg);
 
                         // `保存`功能
-                        saveImg.combinedImg = combinedImg;
+                        saveImg.resultImg = resultImg;
                         imageView.setOnClickListener(new View.OnClickListener() {// 保存图片
                             @Override
                             public void onClick(View v) {// TODO 点击保存
@@ -259,43 +258,7 @@ public class LocalRecognize extends DialogFragment {
 
                 // 显示合并的图片 TODO
                 if (result == 0) {// 如果成功
-                    // 颜色转换
-                    Mat matBGR = new Mat(combined.address());// 强制转换mat
-                    Mat matRGB = new Mat();// 颜色正确的mat
-                    Imgproc.cvtColor(matBGR, matRGB, Imgproc.COLOR_BGR2RGB);// 将opencv默认的BGR转成RGB
-                    combinedImg = Bitmap.createBitmap(combined.arrayWidth(), combined.arrayHeight(), Bitmap.Config.RGB_565);
-                    Utils.matToBitmap(matRGB, combinedImg);
-
-                    // 修改ui TODO
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            // 创建layout参数
-                            LinearLayout.LayoutParams frameParam = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, img_height);
-                            LinearLayout.LayoutParams imgParam = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-                            imgParam.setMargins(img_margin, img_margin, img_margin, img_margin);
-
-                            // 将图片结果绑定到imageview
-                            ImageView imageView = new ImageView(getContext());// 合并之后的图片显示的位置
-                            imageView.setLayoutParams(imgParam);
-                            imageView.setImageBitmap(combinedImg);
-
-                            // `保存`功能
-                            saveImg.combinedImg = combinedImg;// 将子类的图片设置为合并结果
-                            imageView.setOnClickListener(new View.OnClickListener() {// 保存图片
-                                @Override
-                                public void onClick(View v) {// 点击保存
-                                    saveImg.show(fragmentManager, "save");
-                                }
-                            });
-
-                            // 将imageview显示到ui
-                            LinearLayout imageFrame = new LinearLayout(getContext());
-                            imageFrame.setLayoutParams(frameParam);
-                            imageFrame.addView(imageView);
-                            imgLayout.addView(imageFrame);
-                        }
-                    });
+                    showResult(combined);// TODO 显示结果并提供`保存`功能
                 } else {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
@@ -310,8 +273,44 @@ public class LocalRecognize extends DialogFragment {
         asyncCombine.start();
     }
 
-    public void showResult() {
-        ;
+    public void showResult(org.bytedeco.opencv.opencv_core.Mat result) {
+        // 颜色转换
+        Mat matBGR = new Mat(result.address());// 强制转换mat
+        Mat matRGB = new Mat();// 颜色正确的mat
+        Imgproc.cvtColor(matBGR, matRGB, Imgproc.COLOR_BGR2RGB);// 将opencv默认的BGR转成RGB
+        resultImg = Bitmap.createBitmap(result.arrayWidth(), result.arrayHeight(), Bitmap.Config.RGB_565);
+        Utils.matToBitmap(matRGB, resultImg);
+
+        // 修改ui TODO
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                // 创建layout参数
+                LinearLayout.LayoutParams frameParam = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, img_height);
+                LinearLayout.LayoutParams imgParam = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+                imgParam.setMargins(img_margin, img_margin, img_margin, img_margin);
+
+                // 将图片结果绑定到imageview
+                ImageView imageView = new ImageView(getContext());// 合并之后的图片显示的位置
+                imageView.setLayoutParams(imgParam);
+                imageView.setImageBitmap(resultImg);
+
+                // `保存`功能
+                saveImg.resultImg = resultImg;// 将子类的图片设置为合并结果
+                imageView.setOnClickListener(new View.OnClickListener() {// 保存图片
+                    @Override
+                    public void onClick(View v) {// 点击保存
+                        saveImg.show(fragmentManager, "save");
+                    }
+                });
+
+                // 将imageview显示到ui
+                LinearLayout imageFrame = new LinearLayout(getContext());
+                imageFrame.setLayoutParams(frameParam);
+                imageFrame.addView(imageView);
+                imgLayout.addView(imageFrame);
+            }
+        });
     }
 
 }

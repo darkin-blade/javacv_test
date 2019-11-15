@@ -30,7 +30,7 @@ public class SaveImg extends NormalManager {
     public EditText imgName;
     public Button save;// 确定
     public Button back;// 返回
-    public Bitmap combinedImg;// 合并后的图片
+    public Bitmap resultImg;// 合并后的图片
 
     public int box_width = 60;
     public int icon_height = 90;
@@ -99,8 +99,8 @@ public class SaveImg extends NormalManager {
 
                 try {
                     FileOutputStream fileOutputStream = new FileOutputStream(file);
-                    if (combinedImg != null) {// TODO 有合法的结果
-                        combinedImg.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
+                    if (resultImg != null) {// TODO 有合法的结果
+                        resultImg.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
                         fileOutputStream.flush();// TODO
                         fileOutputStream.close();
                         MainActivity.infoToast(getContext(), "saved as " + imgPath);
