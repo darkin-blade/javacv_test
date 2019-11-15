@@ -260,8 +260,8 @@ public class LocalRecognize extends DialogFragment {
                 // 显示合并的图片 TODO
                 if (result == 0) {// 如果成功
                     // 颜色转换
-                    Mat matBGR = new Mat(combined.address());
-                    final Mat matRGB = new Mat();
+                    Mat matBGR = new Mat(combined.address());// 强制转换mat
+                    Mat matRGB = new Mat();// 颜色正确的mat
                     Imgproc.cvtColor(matBGR, matRGB, Imgproc.COLOR_BGR2RGB);// 将opencv默认的BGR转成RGB
                     combinedImg = Bitmap.createBitmap(combined.arrayWidth(), combined.arrayHeight(), Bitmap.Config.RGB_565);
                     Utils.matToBitmap(matRGB, combinedImg);
@@ -275,20 +275,21 @@ public class LocalRecognize extends DialogFragment {
                             LinearLayout.LayoutParams imgParam = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
                             imgParam.setMargins(img_margin, img_margin, img_margin, img_margin);
 
-                            // 显示`结果`图片
-                            ImageView imageView = new ImageView(getContext());// TODO 合并之后的图片显示的位置
+                            // 将图片结果绑定到imageview
+                            ImageView imageView = new ImageView(getContext());// 合并之后的图片显示的位置
                             imageView.setLayoutParams(imgParam);
                             imageView.setImageBitmap(combinedImg);
 
                             // `保存`功能
-                            saveImg.combinedImg = combinedImg;
+                            saveImg.combinedImg = combinedImg;// 将子类的图片设置为合并结果
                             imageView.setOnClickListener(new View.OnClickListener() {// 保存图片
                                 @Override
-                                public void onClick(View v) {// TODO 点击保存
+                                public void onClick(View v) {// 点击保存
                                     saveImg.show(fragmentManager, "save");
                                 }
                             });
 
+                            // 将imageview显示到ui
                             LinearLayout imageFrame = new LinearLayout(getContext());
                             imageFrame.setLayoutParams(frameParam);
                             imageFrame.addView(imageView);
