@@ -4,9 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.view.GestureDetector;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -17,8 +15,11 @@ import android.widget.LinearLayout;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 
+import org.bytedeco.opencv.opencv_core.KeyPointVector;
 import org.bytedeco.opencv.opencv_core.MatVector;
+import org.bytedeco.opencv.opencv_features2d.Feature2D;
 import org.bytedeco.opencv.opencv_stitching.Stitcher;
+import org.bytedeco.opencv.presets.opencv_core;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
@@ -102,7 +103,8 @@ public class LocalRecognize extends DialogFragment {
         btnWork.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                combineImg();
+                 combineImg();
+//                findFestures();// TODO
             }
         });
 
@@ -177,7 +179,7 @@ public class LocalRecognize extends DialogFragment {
         }
     }
 
-    public void combineImg() {// 合并图片 TODO 以缩略图的方式显示
+    public void findFestures() {// TODO 还在测试
         final LinearLayout.LayoutParams frameParam = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, img_height);
         final LinearLayout.LayoutParams imgParam = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         imgParam.setMargins(img_margin, img_margin, img_margin, img_margin);
@@ -193,6 +195,67 @@ public class LocalRecognize extends DialogFragment {
         class AsyncCombine extends Thread {
             @Override
             public void run() {
+                // 合并
+                Stitcher stitcher = Stitcher.create();
+                Feature2D feature2D = stitcher.featuresFinder();
+                KeyPointVector keyPoints = new KeyPointVector();
+
+                // 存放结果
+                final org.bytedeco.opencv.opencv_core.Mat result = null;
+                if (result == null) MainActivity.infoLog(result.toString());// TODO 该结果不能为空
+
+                // 颜色转换
+                Mat matBGR = new Mat(result.address());
+                final Mat matRGB = new Mat();
+                Imgproc.cvtColor(matBGR, matRGB, Imgproc.COLOR_BGR2RGB);// 将opencv默认的BGR转成RGB
+                final ImageView imageView = new ImageView(getContext());// TODO 合并之后的图片显示的位置
+
+                // 修改ui TODO
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        imageView.setLayoutParams(imgParam);
+                        combinedImg = Bitmap.createBitmap(result.arrayWidth(), result.arrayHeight(), Bitmap.Config.RGB_565);
+                        Utils.matToBitmap(matRGB, combinedImg);
+                        imageView.setImageBitmap(combinedImg);
+
+                        // `保存`功能
+                        saveImg.combinedImg = combinedImg;
+                        imageView.setOnClickListener(new View.OnClickListener() {// 保存图片
+                            @Override
+                            public void onClick(View v) {// TODO 点击保存
+                                saveImg.show(fragmentManager, "save");
+                            }
+                        });
+
+                        LinearLayout imageFrame = new LinearLayout(getContext());
+                        imageFrame.setLayoutParams(frameParam);
+                        imageFrame.addView(imageView);
+                        imgLayout.addView(imageFrame);
+                    }
+                });
+            }
+        }
+        AsyncCombine asyncCombine = new AsyncCombine();
+        asyncCombine.start();
+    }
+
+    public void combineImg() {// 合并图片 TODO 以缩略图的方式显示
+        class AsyncCombine extends Thread {
+            @Override
+            public void run() {
+                final LinearLayout.LayoutParams frameParam = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, img_height);
+                final LinearLayout.LayoutParams imgParam = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+                imgParam.setMargins(img_margin, img_margin, img_margin, img_margin);
+
+                // 读取图片
+                final MatVector imgVector = new MatVector();
+                org.bytedeco.opencv.opencv_core.Mat mat;
+                for (int i = 0; i < imgList.size(); i ++) {
+                    mat = imread(imgList.get(i));
+                    imgVector.push_back(mat);
+                }
+
                 // 合并
                 Stitcher stitcher = Stitcher.create();
                 final org.bytedeco.opencv.opencv_core.Mat combined = new org.bytedeco.opencv.opencv_core.Mat();
