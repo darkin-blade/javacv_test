@@ -15,12 +15,15 @@ import android.widget.LinearLayout;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 
-import org.bytedeco.opencv.opencv_core.KeyPointVector;
 import org.bytedeco.opencv.opencv_core.MatVector;
+import org.bytedeco.opencv.opencv_core.Size;
+import org.bytedeco.opencv.opencv_stitching.ImageFeatures;
 import org.bytedeco.opencv.opencv_stitching.Stitcher;
+import org.bytedeco.opencv.opencv_xfeatures2d.SURF;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
-import org.opencv.features2d.FastFeatureDetector;
+import org.opencv.features2d.Feature2D;
+import org.opencv.features2d.ORB;
 import org.opencv.imgproc.Imgproc;
 
 import java.util.ArrayList;
@@ -99,7 +102,7 @@ public class LocalRecognize extends DialogFragment {
             @Override
             public void onClick(View v) {
 //                 combineImg();
-                findFestures();// TODO
+                test2();// TODO
             }
         });
 
@@ -172,29 +175,46 @@ public class LocalRecognize extends DialogFragment {
         }
     }
 
-    public void findFestures() {// TODO 还在测试
+    public void test2() {// TODO 还在测试
         class AsyncFind extends Thread {
             @Override
-            public void run() {// 读取图片
-                String tmp = null;
-                if (tmp.length() == 0) return;// TODO 必报错
-
-                if (imgList.size() <= 0) {
-                    MainActivity.infoLog("no imgs");
-                    return;// TODO 报错
+            public void run() {
+                int img_num = 2;
+                if (imgList.size() < img_num) {
+                    return;// TODO 不能运行
                 }
 
-                org.bytedeco.opencv.opencv_core.Mat mat = imread(imgList.get(0));// 获取第一张图片
-                KeyPointVector keyPoints = new KeyPointVector();
-                FastFeatureDetector fastFeatureDetector = FastFeatureDetector.__fromPtr__(20);// TODO 值
+                // 存储所有照片
+                org.bytedeco.opencv.opencv_core.Mat img = imread(imgList.get(0));
+                MatVector imgs = new MatVector();
+                Feature2D finder = ORB.create();
+                ImageFeatures[] features = new ImageFeatures[2];
+                for (int i = 0; i < img_num; i ++) {
+                    features[i] = new ImageFeatures();
+                }
 
-                org.bytedeco.opencv.opencv_core.Mat imgKeyPoints = null;
+                for (int i = 0; i < img_num; i ++) {
+                    // 读取原图片
+                    org.bytedeco.opencv.opencv_core.Mat full_img = imread(imgList.get(i));
+
+                    // 放缩图片, cols 是宽
+                    int width = 480;
+                    int height = full_img.arrayHeight() * 480 / full_img.arrayWidth();
+                    Size size = new Size(width, height);
+                    img = new org.bytedeco.opencv.opencv_core.Mat(size, full_img.type());// TODO CV_32S
+                    imgs.push_back(img);// 保存图片到向量
+                }
+
+                // 查找特征点
+                Ima
+
+                org.bytedeco.opencv.opencv_core.Mat result = null;
 
                 int status = 0;
 
-                // 显示合并的图片 TODO
+                // 显示结果
                 if (status == 0) {// 如果成功
-                    showResult(imgKeyPoints);// TODO 显示结果并提供`保存`功能
+                    showResult(result);// TODO 显示结果并提供`保存`功能
                 } else {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
