@@ -218,52 +218,15 @@ public class SelectImg extends NormalManager {
         LinearLayout.LayoutParams detailParam = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         LinearLayout.LayoutParams nameParam = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
 
+        // 统一生成元素
         final LinearLayout item = new LinearLayout(getContext());// TODO 参数
+        LinearLayout type = new LinearLayout(getContext());// 图标的外圈
+        ImageView icon = new ImageView(getContext());// 图标
+        RelativeLayout detail = new RelativeLayout(getContext());
+        TextView name = new TextView(getContext());// 文件名
+
         item.setLayoutParams(itemParam);
         item.setBackgroundResource(R.color.grey);
-
-        LinearLayout type = new LinearLayout(getContext());// 图标的外圈
-        typeParam.setMargins(type_padding, type_padding, type_padding, type_padding);
-        type.setLayoutParams(typeParam);
-
-        ImageView icon = new ImageView(getContext());// 图标
-        icon.setLayoutParams(iconParam);
-        if (itemType == 0) {// 文件
-            icon.setBackgroundResource(R.drawable.item_file);
-
-            // TODO 记录所有需要加载的文件
-            imgLayouts.add(item);// 记录ui
-            imgPaths.add(itemPath + "/" + itemName);// 记录路径
-        } else {// 文件夹
-            icon.setBackgroundResource(R.drawable.item_dir);
-        }
-
-        RelativeLayout detail = new RelativeLayout(getContext());
-        detail.setLayoutParams(detailParam);
-
-        TextView name = new TextView(getContext());// 文件名
-        nameParam.setMargins(0, name_top, name_right, name_top);
-        name.setLayoutParams(nameParam);
-        name.setBackgroundResource(R.color.grey);// TODO
-        name.setText(itemName);
-        name.setPadding(name_padding, name_padding, name_padding, name_padding);
-        name.setSingleLine();
-
-        type.addView(icon);
-        item.addView(type);
-        detail.addView(name);
-//        if (itemType == 0) {// TODO 只有图片才有复选框
-//            detail.addView(checkBox);
-//        }
-        item.addView(detail);
-
-        // 设置靠父元素左/右
-//        if (itemType == 0) {// TODO 只有图片才有复选框
-//            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) checkBox.getLayoutParams();
-//            params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);// 单选框靠右
-//            checkBox.setLayoutParams(params);
-//        }
-
         if (itemType == 2) {// 父文件夹
             item.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -280,6 +243,35 @@ public class SelectImg extends NormalManager {
                 }
             });
         }
+
+        typeParam.setMargins(type_padding, type_padding, type_padding, type_padding);
+        type.setLayoutParams(typeParam);
+
+        icon.setLayoutParams(iconParam);
+        if (itemType == 0) {// 文件
+            icon.setBackgroundResource(R.drawable.item_file);
+
+            // TODO 记录所有需要加载的文件
+            imgLayouts.add(item);// 记录ui
+            imgPaths.add(itemPath + "/" + itemName);// 记录路径
+        } else {// 文件夹
+            icon.setBackgroundResource(R.drawable.item_dir);
+        }
+
+        detail.setLayoutParams(detailParam);
+
+        nameParam.setMargins(0, name_top, name_right, name_top);
+        name.setLayoutParams(nameParam);
+        name.setBackgroundResource(R.color.grey);// TODO
+        name.setText(itemName);
+        name.setPadding(name_padding, name_padding, name_padding, name_padding);
+        name.setSingleLine();
+
+        // 合并ui
+        type.addView(icon);
+        item.addView(type);
+        detail.addView(name);
+        item.addView(detail);
 
         layout.addView(item);
 

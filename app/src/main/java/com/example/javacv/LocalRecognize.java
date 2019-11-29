@@ -19,7 +19,6 @@ import org.bytedeco.opencv.opencv_core.MatVector;
 import org.bytedeco.opencv.opencv_core.Size;
 import org.bytedeco.opencv.opencv_stitching.ImageFeatures;
 import org.bytedeco.opencv.opencv_stitching.Stitcher;
-import org.bytedeco.opencv.opencv_xfeatures2d.SURF;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
 import org.opencv.features2d.Feature2D;
@@ -176,7 +175,7 @@ public class LocalRecognize extends DialogFragment {
     }
 
     public void test2() {// TODO 还在测试
-        class AsyncFind extends Thread {
+        class Test2 extends Thread {
             @Override
             public void run() {
                 int img_num = 2;
@@ -185,7 +184,7 @@ public class LocalRecognize extends DialogFragment {
                 }
 
                 // 存储所有照片
-                org.bytedeco.opencv.opencv_core.Mat img = imread(imgList.get(0));
+                org.bytedeco.opencv.opencv_core.Mat img;
                 MatVector imgs = new MatVector();
                 Feature2D finder = ORB.create();
                 ImageFeatures[] features = new ImageFeatures[2];
@@ -205,8 +204,7 @@ public class LocalRecognize extends DialogFragment {
                     imgs.push_back(img);// 保存图片到向量
                 }
 
-                // 查找特征点
-                Ima
+                // TODO 查找特征点
 
                 org.bytedeco.opencv.opencv_core.Mat result = null;
 
@@ -225,8 +223,8 @@ public class LocalRecognize extends DialogFragment {
                 }
             }
         }
-        AsyncFind asyncFind = new AsyncFind();
-        asyncFind.start();
+        Test2 test2 = new Test2();
+        test2.start();
     }
 
     public void combineImg() {// 合并图片 TODO 以缩略图的方式显示
