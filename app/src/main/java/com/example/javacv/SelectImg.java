@@ -1,5 +1,6 @@
 package com.example.javacv;
 
+import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -130,79 +131,83 @@ public class SelectImg extends NormalManager {
         class LoadImg extends Thread {
             @Override
             public void run() {
-                for (int i = 0; i < imgLayouts.size(); i ++) {// 逐个异步加载图片
-                    // 生成缩略图
-                    final Bitmap bitmap = managerImg.LoadThumb(imgPaths.get(i), 60, 60);// TODO 大小
-                    if (bitmap == null) {// 不是图片 TODO
-                        continue;
-                    }
-
-                    // 是图片
-
-                    // TODO 加载过慢导致数组越界
-                    MainActivity.infoLog(i + "/" + imgLayouts.size());
-                    if (i >= imgLayouts.size()) {
-                        MainActivity.infoLog("before");
-                        break;
-                    }
-
-                    final LinearLayout item = imgLayouts.get(i);
-                    LinearLayout type = (LinearLayout) item.getChildAt(0);
-                    final RelativeLayout detail = (RelativeLayout) item.getChildAt(1);
-                    final ImageView icon = (ImageView) type.getChildAt(0);
-                    LinearLayout.LayoutParams boxParam = new LinearLayout.LayoutParams(box_width, box_width);
-
-                    final CheckBox checkBox = new CheckBox(getContext());
-                    boxParam.setMargins(box_right, box_top, box_right, box_top);
-                    checkBox.setLayoutParams(boxParam);
-                    checkBox.setButtonDrawable(R.drawable.checkbox_library);
-
-                    final int finalI = i;// TODO
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            // 动态生成缩略图
-                            icon.setImageBitmap(bitmap);
-                            icon.setBackgroundResource(R.color.transparent);
-
-                            // TODO 图片的复选功能
-                            // 点击外部
-                            item.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    if (checkBox.isChecked()) {// 直接调用checkbox的监听,不需重复操作
-                                        item.setBackgroundResource(R.color.grey);
-                                        checkBox.setChecked(false);
-                                    } else {
-                                        item.setBackgroundResource(R.color.grey_light);
-                                        checkBox.setChecked(true);
-                                    }
-                                }
-                            });
-
-                            // 直接点击复选框
-                            checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                                @Override
-                                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                                    if (checkBox.isChecked()) {
-                                        item.setBackgroundResource(R.color.grey_light);
-                                        imgList.add(imgPaths.get(finalI));// TODO 添加到list
-                                        MainActivity.infoLog("size: " + imgList.size());
-                                    } else {
-                                        item.setBackgroundResource(R.color.grey);
-                                        boolean result = imgList.remove(imgPaths.get(finalI));// TODO 从list移出
-                                        MainActivity.infoLog("size: " + imgList.size() + ", " + result);
-                                    }
-                                }
-                            });
-
-                            // 动态添加checkbox
-                            detail.addView(checkBox);
-                            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) checkBox.getLayoutParams();
-                            params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);// 单选框靠右
-                            checkBox.setLayoutParams(params);
+                for (int i = 0; i < imgLayouts.size(); i++) {// 逐个异步加载图片
+                    try {
+                        // 生成缩略图
+                        final Bitmap bitmap = managerImg.LoadThumb(imgPaths.get(i), 60, 60);// TODO 大小
+                        if (bitmap == null) {// 不是图片 TODO
+                            continue;
                         }
-                    });
+
+                        // 是图片
+
+                        // TODO 加载过慢导致数组越界
+                        MainActivity.infoLog(i + "/" + imgLayouts.size());
+                        if (i >= imgLayouts.size()) {
+                            MainActivity.infoLog("before");
+                            break;
+                        }
+
+                        final LinearLayout item = imgLayouts.get(i);
+                        LinearLayout type = (LinearLayout) item.getChildAt(0);
+                        final RelativeLayout detail = (RelativeLayout) item.getChildAt(1);
+                        final ImageView icon = (ImageView) type.getChildAt(0);
+                        LinearLayout.LayoutParams boxParam = new LinearLayout.LayoutParams(box_width, box_width);
+
+                        final CheckBox checkBox = new CheckBox(getContext());
+                        boxParam.setMargins(box_right, box_top, box_right, box_top);
+                        checkBox.setLayoutParams(boxParam);
+                        checkBox.setButtonDrawable(R.drawable.checkbox_library);
+
+                        final int finalI = i;// TODO
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                // 动态生成缩略图
+                                icon.setImageBitmap(bitmap);
+                                icon.setBackgroundResource(R.color.transparent);
+
+                                // TODO 图片的复选功能
+                                // 点击外部
+                                item.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        if (checkBox.isChecked()) {// 直接调用checkbox的监听,不需重复操作
+                                            item.setBackgroundResource(R.color.grey);
+                                            checkBox.setChecked(false);
+                                        } else {
+                                            item.setBackgroundResource(R.color.grey_light);
+                                            checkBox.setChecked(true);
+                                        }
+                                    }
+                                });
+
+                                // 直接点击复选框
+                                checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                                    @Override
+                                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                                        if (checkBox.isChecked()) {
+                                            item.setBackgroundResource(R.color.grey_light);
+                                            imgList.add(imgPaths.get(finalI));// TODO 添加到list
+                                            MainActivity.infoLog("size: " + imgList.size());
+                                        } else {
+                                            item.setBackgroundResource(R.color.grey);
+                                            boolean result = imgList.remove(imgPaths.get(finalI));// TODO 从list移出
+                                            MainActivity.infoLog("size: " + imgList.size() + ", " + result);
+                                        }
+                                    }
+                                });
+
+                                // 动态添加checkbox
+                                detail.addView(checkBox);
+                                RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) checkBox.getLayoutParams();
+                                params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);// 单选框靠右
+                                checkBox.setLayoutParams(params);
+                            }
+                        });
+                    } catch (NullPointerException e) {
+                        break;// TODO UI改变过快
+                    }
                 }
             }
         }

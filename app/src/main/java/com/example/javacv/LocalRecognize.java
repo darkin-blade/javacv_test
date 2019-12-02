@@ -100,8 +100,8 @@ public class LocalRecognize extends DialogFragment {
         btnWork.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                 combineImg();
-                test2();// TODO
+                 combineImg();
+//                test2();// TODO
             }
         });
 
